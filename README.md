@@ -8,6 +8,45 @@
 
 ---
 
+## ⚡ Quick Start: How to Run in 1 Click
+
+You can run the entire portal with a single command or by double-clicking:
+
+### Option A: Windows 1-Click Launch (Recommended)
+Simply double-click:
+```cmd
+run.bat
+```
+*(Or in PowerShell / Command Prompt, run: `.\run.bat`)*
+
+**What `run.bat` does automatically:**
+1. Checks that all Python dependencies (`flask`, `mysql-connector-python`, `reportlab`, etc.) are installed (installs any missing packages automatically).
+2. Verifies MySQL server connectivity.
+3. Automatically sets up and seeds `innosphere_db` if it hasn't been initialized yet.
+4. Starts the Flask server and **automatically opens your web browser** to `http://localhost:5000`!
+
+---
+
+### Option B: Python Command
+```bash
+python run.py
+```
+
+### Option C: Re-seed Database (Reset Data)
+To reset and re-populate the sample data at any time:
+```cmd
+setup.bat
+```
+*(or run: `python database/setup_db.py`)*
+
+### Option D: Run All Automated Tests
+To verify all database triggers, procedures, views, and routes:
+```cmd
+test.bat
+```
+
+---
+
 ## 1. Project Vision & Architecture
 
 **InnoSphere** is a modern, light-themed institutional portal designed to manage students, multi-college participants, internal campus hackathons, external national opportunities (e.g. Smart India Hackathon, AICTE ATAL Challenges), teams, project submissions, and judge evaluations.
