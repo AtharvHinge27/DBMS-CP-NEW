@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Register Account – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h2 class="fw-bold text-primary mb-1">Create InnoSphere Account</h2>
+                    <p class="text-secondary small">Join your institution's innovation network</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="row g-3 mb-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Full Name *</label>
+                            <input type="text" id="regFullName" class="form-control" placeholder="e.g. Atharv Hinge" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Email Address *</label>
+                            <input type="email" id="regEmail" class="form-control" placeholder="student@pict.edu" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Password (min 6 chars) *</label>
+                            <input type="password" id="regPassword" class="form-control" placeholder="Create password" required minlength="6">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Account Role *</label>
+                            <select id="regRole" class="form-select" required>
+                                <option value="Participant" selected>Participant (Student)</option>
+                                <option value="College Coordinator">College Coordinator</option>
+                                <option value="Judge">Judge / Evaluator</option>
+                                <option value="Mentor">Faculty Mentor</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Affiliated College / Institution</label>
+                            <select id="regCollege" class="form-select">
+                                <option value="">Loading affiliated colleges...</option>
+                            </select>
+                            <div class="form-text small">Multi-tenant institutional link for academic tracking.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="termsCheck" required checked>
+                        <label class="form-check-label small text-secondary" for="termsCheck">
+                            I agree to the institutional code of conduct and academic ethics.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-inno w-100 py-2 mb-3" id="registerSubmitBtn">
+                        <i class="bi bi-check-circle me-1"></i> Register & Enter Portal
+                    </button>
+                </form>
+
+                <div class="text-center small text-secondary">
+                    Already registered? <a href="/login" class="text-primary fw-bold text-decoration-none">Sign In here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Populate colleges dropdown
+    const res = await apiFetch('/api/admin/colleges');
+    const select = document.getElementById('regCollege');
+    if (res && res.ok && res.data && res.data.success) {
+        const colleges = res.data.colleges || [];
+        select.innerHTML = '<option value="">-- Select Affiliated College --</option>' +
+            colleges.map(c => `<option value="${c.college_id}">${c.college_name} (${c.college_code})</option>`).join('');
+    } else {
+        select.innerHTML = '<option value="1">Pune Institute of Computer Technology (PICT)</option>';
+    }
+});
+
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('registerSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
+
+    const full_name = document.getElementById('regFullName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
+    const role = document.getElementById('regRole').value;
+    const college_id = document.getElementById('regCollege').value;
+
+    const res = await apiFetch('/api/auth/register', {
+        method: 'POST',
+        body: { full_name, email, password, role, college_id: college_id ? parseInt(college_id) : null }
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Register & Enter Portal';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Registration successful!', 'success');
+        setTimeout(() => {
+            window.location.href = res.data.redirect || '/dashboard';
+        }, 700);
+    } else {
+        showToast((res && res.data && res.data.message) || 'Registration failed.', 'danger');
+    }
+});
+</script>
+{% endblock %}

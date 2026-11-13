@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Hackathons & Innovation Challenges – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header & Action Bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Hackathon & Innovation Discovery Hub</h1>
+            <div class="small text-muted">Browse institutional hackathons, cross-college ideathons, and national government opportunities.</div>
+        </div>
+        {% if current_user.role in ['Admin', 'College Coordinator'] %}
+        <button class="btn btn-primary-inno btn-sm mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#createHackathonModal">
+            <i class="bi bi-plus-circle me-1"></i> Create Hackathon
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Search & Filters Toolbar -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="hackathonSearchInput" class="form-control border-start-0" placeholder="Search by title, theme, or organizer...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="btn-group w-100" role="group" id="typeFilterGroup">
+                    <button type="button" class="btn btn-sm btn-outline-inno active" data-type="All">All Types</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-type="Internal">Internal</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-type="External">External</button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilterSelect" class="form-select form-select-sm">
+                    <option value="All">All Statuses</option>
+                    <option value="Open" selected>Open for Registration</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hackathon Cards Grid -->
+    <div class="row g-4" id="hackathonsGrid">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="small text-muted mt-2">Loading hackathon opportunities...</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Create Hackathon Modal (Admin / Coordinator Only) -->
+{% if current_user.role in ['Admin', 'College Coordinator'] %}
+<div class="modal fade" id="createHackathonModal" tabindex="-1" aria-labelledby="createHackathonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="createHackathonModalLabel"><i class="bi bi-trophy me-2"></i>Create New Hackathon</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createHackathonForm">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold">Hackathon Title *</label>
+                            <input type="text" id="newHackTitle" class="form-control" placeholder="e.g. InnoHacks 2026 – AI & Web Sprint" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Opportunity Type *</label>
+                            <select id="newHackType" class="form-select" required>
+                                <option value="Internal" selected>Internal (College Hackathon)</option>
+                                <option value="External">External (National / Global)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Theme / Domain *</label>
+                            <input type="text" id="newHackTheme" class="form-control" placeholder="e.g. Smart Campus & IoT" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Organizer Name *</label>
+                            <input type="text" id="newHackOrganizer" class="form-control" placeholder="e.g. PICT ACM & InnoSphere Council" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Event Mode *</label>
+                            <select id="newHackMode" class="form-select">
+                                <option value="Online">Online / Virtual</option>
+                                <option value="Offline">Offline (Campus)</option>
+                                <option value="Hybrid" selected>Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold">Venue / Campus Location</label>
+                            <input type="text" id="newHackVenue" class="form-control" placeholder="e.g. Main Auditorium & Virtual Labs">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Registration Deadline *</label>
+                            <input type="date" id="newHackRegDeadline" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Start Date *</label>
+                            <input type="date" id="newHackStartDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">End Date *</label>
+                            <input type="date" id="newHackEndDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Min Team Size</label>
+                            <input type="number" id="newHackMinSize" class="form-control" value="2" min="1" max="10">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Max Team Size</label>
+                            <input type="number" id="newHackMaxSize" class="form-control" value="4" min="1" max="10">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Prize Pool / Rewards</label>
+                            <input type="text" id="newHackPrize" class="form-control" placeholder="₹50,000 + Merit Certificates">
+                        </div>
+                        <div class="col-12" id="externalUrlGroup" style="display: none;">
+                            <label class="form-label small fw-semibold">External Platform URL</label>
+                            <input type="url" id="newHackExternalUrl" class="form-control" placeholder="https://sih.gov.in or https://unstop.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Eligibility Criteria</label>
+                            <input type="text" id="newHackEligibility" class="form-control" placeholder="Open to second and third-year engineering students.">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Description & Problem Statement *</label>
+                            <textarea id="newHackDescription" class="form-control" rows="3" placeholder="Provide detailed hackathon scope, problem areas, and submission guidelines..." required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno" id="saveHackathonBtn">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentFilterType = 'All';
+
+async function loadHackathons() {
+    const search = document.getElementById('hackathonSearchInput').value.trim();
+    const status = document.getElementById('statusFilterSelect').value;
+
+    let url = `/api/hackathons?type=${currentFilterType}&status=${status}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+
+    const res = await apiFetch(url);
+    const grid = document.getElementById('hackathonsGrid');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const list = res.data.hackathons || [];
+        if (list.length === 0) {
+            grid.innerHTML = '<div class="col-12 text-center text-muted py-5">No hackathons match the selected filters.</div>';
+            return;
+        }
+
+        grid.innerHTML = list.map(h => `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border rounded-4 p-4 shadow-sm bg-white d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge ${h.hackathon_type === 'Internal' ? 'badge-internal' : 'badge-external'}">
+                            ${h.hackathon_type} Hackathon
+                        </span>
+                        <span class="badge ${h.status === 'Open' ? 'badge-status-open' : 'bg-light text-muted border'}">
+                            ${h.status}
+                        </span>
+                    </div>
+
+                    <h4 class="h5 fw-bold text-primary mb-1">${h.title}</h4>
+                    <div class="small text-muted mb-2"><i class="bi bi-tag-fill me-1 text-secondary"></i> ${h.theme}</div>
+                    
+                    <p class="small text-secondary flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
+                        ${h.description}
+                    </p>
+
+                    <div class="border-top pt-2 mt-auto small">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted"><i class="bi bi-building me-1"></i> Host:</span>
+                            <span class="fw-semibold text-truncate" style="max-width: 170px;">${h.host_college}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted"><i class="bi bi-hourglass-split me-1"></i> Deadline:</span>
+                            <span class="fw-semibold text-danger">${h.registration_deadline}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted"><i class="bi bi-people me-1"></i> Team Size:</span>
+                            <span>${h.min_team_size} - ${h.max_team_size} Members</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted"><i class="bi bi-trophy me-1"></i> Prize:</span>
+                            <span class="fw-bold text-success">${h.prize_pool}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-2 border-top">
+                        <a href="/hackathons/${h.hackathon_id}" class="btn btn-sm btn-outline-inno flex-grow-1">
+                            View Details
+                        </a>
+                        ${h.user_registration_status ? `
+                            <button class="btn btn-sm btn-success" disabled>
+                                <i class="bi bi-check2"></i> Registered
+                            </button>
+                        ` : h.hackathon_type === 'External' && h.external_url ? `
+                            <a href="${h.external_url}" target="_blank" class="btn btn-sm btn-warning">
+                                Apply Externally <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        ` : `
+                            <button class="btn btn-sm btn-primary-inno" onclick="registerForHackathon(${h.hackathon_id})">
+                                Register
+                            </button>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+async function registerForHackathon(hackathonId) {
+    const res = await apiFetch('/api/hackathons/register', {
+        method: 'POST',
+        body: { hackathon_id: hackathonId }
+    });
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Successfully registered!', 'success');
+        loadHackathons();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Registration failed.', 'danger');
+    }
+}
+
+// Filter button toggle
+document.querySelectorAll('#typeFilterGroup button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#typeFilterGroup button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilterType = e.target.getAttribute('data-type');
+        loadHackathons();
+    });
+});
+
+document.getElementById('statusFilterSelect').addEventListener('change', loadHackathons);
+document.getElementById('hackathonSearchInput').addEventListener('input', () => {
+    clearTimeout(window.searchDebounce);
+    window.searchDebounce = setTimeout(loadHackathons, 300);
+});
+
+// Modal external url toggle
+const newHackTypeSelect = document.getElementById('newHackType');
+if (newHackTypeSelect) {
+    newHackTypeSelect.addEventListener('change', (e) => {
+        const extGroup = document.getElementById('externalUrlGroup');
+        if (extGroup) {
+            extGroup.style.display = e.target.value === 'External' ? 'block' : 'none';
+        }
+    });
+}
+
+// Create Hackathon Form Submit
+const createForm = document.getElementById('createHackathonForm');
+if (createForm) {
+    createForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveHackathonBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+
+        const payload = {
+            title: document.getElementById('newHackTitle').value.trim(),
+            hackathon_type: document.getElementById('newHackType').value,
+            theme: document.getElementById('newHackTheme').value.trim(),
+            organizer_name: document.getElementById('newHackOrganizer').value.trim(),
+            mode: document.getElementById('newHackMode').value,
+            venue: document.getElementById('newHackVenue').value.trim(),
+            registration_deadline: document.getElementById('newHackRegDeadline').value,
+            start_date: document.getElementById('newHackStartDate').value,
+            end_date: document.getElementById('newHackEndDate').value,
+            min_team_size: parseInt(document.getElementById('newHackMinSize').value),
+            max_team_size: parseInt(document.getElementById('newHackMaxSize').value),
+            prize_pool: document.getElementById('newHackPrize').value.trim(),
+            external_url: document.getElementById('newHackExternalUrl').value.trim(),
+            eligibility: document.getElementById('newHackEligibility').value.trim(),
+            description: document.getElementById('newHackDescription').value.trim()
+        };
+
+        const res = await apiFetch('/api/hackathons', {
+            method: 'POST',
+            body: payload
+        });
+
+        btn.disabled = false;
+        btn.innerHTML = 'Create Event';
+
+        if (res && res.ok && res.data && res.data.success) {
+            showToast(res.data.message || 'Hackathon created!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('createHackathonModal')).hide();
+            createForm.reset();
+            loadHackathons();
+        } else {
+            showToast((res && res.data && res.data.message) || 'Failed to create hackathon.', 'danger');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadHackathons);
+</script>
+{% endblock %}

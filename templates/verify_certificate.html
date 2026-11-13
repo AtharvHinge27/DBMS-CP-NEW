@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Certificate – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Search Box Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white text-center">
+                <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-2">
+                    <i class="bi bi-shield-check fs-2"></i>
+                </div>
+                <h2 class="fw-bold text-primary mb-1">Public Certificate Verification Portal</h2>
+                <p class="text-secondary small mb-4" style="max-width: 500px; margin: 0 auto;">
+                    Authenticate digital credentials and hackathon awards issued through the InnoSphere Academic Portal.
+                </p>
+
+                <form id="verifyForm" class="d-flex justify-content-center gap-2" style="max-width: 520px; margin: 0 auto;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-qr-code-scan"></i></span>
+                        <input type="text" id="certCodeInput" class="form-control text-uppercase fw-bold" placeholder="e.g. INNO-2026-WIN001" value="{{ initial_code }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary-inno px-4" id="verifyBtn">
+                        Verify
+                    </button>
+                </form>
+            </div>
+
+            <!-- Verification Result Container -->
+            <div id="verificationResult">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function performVerification(code) {
+    if (!code) return;
+    const resultDiv = document.getElementById('verificationResult');
+    resultDiv.innerHTML = `
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="small text-muted mt-2">Checking database registry...</div>
+        </div>
+    `;
+
+    const res = await apiFetch(`/api/certificates/verify/${encodeURIComponent(code)}`);
+
+    if (res && res.ok && res.data && res.data.verified) {
+        const c = res.data.certificate;
+        resultDiv.innerHTML = `
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white border-top border-4 border-success">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-2">
+                        <i class="bi bi-patch-check-fill fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold text-success mb-1">Authentic & Verified Certificate</h3>
+                    <div class="small text-muted">This credential is authenticated by the InnoSphere Institutional Registry.</div>
+                </div>
+
+                <div class="row g-3 border rounded-3 p-3 bg-light mb-4 small">
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Recipient Name:</span>
+                        <strong class="fs-6 text-dark">${c.recipient_name}</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Certificate Type:</span>
+                        <span class="badge bg-warning text-dark fs-7">${c.certificate_type}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Event / Hackathon:</span>
+                        <strong class="text-primary">${c.hackathon_title}</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Team Affiliation:</span>
+                        <strong class="text-dark">${c.team_name || 'Individual'}</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Issuing Institution:</span>
+                        <span class="text-dark">${c.issuing_institution}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Date of Issue:</span>
+                        <span class="text-dark">${c.issue_date}</span>
+                    </div>
+                    <div class="col-12 border-top pt-2">
+                        <span class="text-muted">Unique Verification Code:</span>
+                        <code class="fw-bold text-dark fs-6 ms-2">${c.certificate_code}</code>
+                        <span class="badge bg-light text-secondary border ms-2">Verified ${c.verified_count} times</span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="/api/certificates/download/${c.certificate_code}" target="_blank" class="btn btn-primary-inno px-4 py-2">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Download Official Verified PDF
+                    </a>
+                </div>
+            </div>
+        `;
+    } else {
+        resultDiv.innerHTML = `
+            <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white border-top border-4 border-danger">
+                <i class="bi bi-x-circle-fill text-danger fs-1 mb-2"></i>
+                <h4 class="fw-bold text-danger mb-1">Invalid or Unrecognized Certificate</h4>
+                <p class="small text-muted mb-0">No matching certificate found in the database for code: <code>${code}</code>.</p>
+            </div>
+        `;
+    }
+}
+
+document.getElementById('verifyForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = document.getElementById('certCodeInput').value.trim();
+    performVerification(code);
+});
+
+// Auto-run if query param was present
+document.addEventListener('DOMContentLoaded', () => {
+    const initial = "{{ initial_code }}";
+    if (initial) {
+        performVerification(initial);
+    }
+});
+</script>
+{% endblock %}

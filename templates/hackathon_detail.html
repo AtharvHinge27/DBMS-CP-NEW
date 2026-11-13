@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}Hackathon Overview – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Back Navigation -->
+    <div class="mb-3">
+        <a href="/hackathons" class="text-secondary text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i> Back to Hackathons Directory
+        </a>
+    </div>
+
+    <!-- Main Hackathon Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 bg-white" id="hackathonDetailHeader">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge" id="detailTypeBadge">Loading...</span>
+                <span class="badge" id="detailStatusBadge">Loading...</span>
+                <span class="badge bg-light text-dark border" id="detailModeBadge"><i class="bi bi-broadcast me-1"></i> Mode</span>
+            </div>
+            <div id="actionArea">
+                <!-- Populated dynamically: Register, Create Team, or Team info -->
+            </div>
+        </div>
+
+        <h1 class="display-6 fw-bold text-primary mb-2" id="detailTitle">Loading Hackathon...</h1>
+        <div class="lead text-secondary mb-3" id="detailTheme">Theme</div>
+
+        <div class="row g-3 border-top pt-3 text-secondary small">
+            <div class="col-6 col-md-3">
+                <div class="text-muted"><i class="bi bi-building me-1"></i> Host Institution</div>
+                <div class="fw-bold text-dark mt-1" id="detailHost">-</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted"><i class="bi bi-hourglass-split me-1"></i> Registration Deadline</div>
+                <div class="fw-bold text-danger mt-1" id="detailDeadline">-</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted"><i class="bi bi-calendar3 me-1"></i> Event Timeline</div>
+                <div class="fw-bold text-dark mt-1" id="detailDates">-</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted"><i class="bi bi-gift-fill me-1"></i> Prize Pool</div>
+                <div class="fw-bold text-success mt-1" id="detailPrize">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="row g-4">
+        <!-- Left Column: Scope, Eligibility & Rubric -->
+        <div class="col-lg-8">
+            <!-- Scope & Description -->
+            <div class="content-card mb-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-file-text me-1"></i> Description & Problem Statement</h5>
+                <p class="text-secondary" id="detailDescription" style="line-height: 1.7; white-space: pre-line;">
+                    Loading description...
+                </p>
+
+                <h6 class="fw-bold text-dark mt-4 mb-2"><i class="bi bi-check2-circle text-primary me-1"></i> Eligibility & Guidelines</h6>
+                <p class="text-secondary small" id="detailEligibility">
+                    Open to all registered undergraduate and postgraduate students.
+                </p>
+
+                <div class="mt-3 p-3 bg-light rounded-3 small">
+                    <span class="fw-bold text-dark"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Venue / Portal Location:</span>
+                    <span id="detailVenue" class="text-secondary ms-1">-</span>
+                </div>
+            </div>
+
+            <!-- Evaluation Criteria Table -->
+            <div class="content-card mb-4">
+                <div class="content-card-header">
+                    <h5 class="content-card-title"><i class="bi bi-sliders text-warning"></i> Evaluation Rubric & Criteria Weights</h5>
+                    <span class="small text-muted">Standard 100-Point Scoring</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-custom" id="criteriaTable">
+                        <thead>
+                            <tr>
+                                <th>Criteria Name</th>
+                                <th>Max Score</th>
+                                <th>Weightage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3" class="text-center py-3 text-muted">Loading criteria...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Registered Teams List -->
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h5 class="content-card-title"><i class="bi bi-people-fill text-success"></i> Registered Teams & Project Submissions</h5>
+                    <span class="badge bg-light text-dark border" id="teamCountBadge">0 Teams</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-custom" id="teamsRosterTable">
+                        <thead>
+                            <tr>
+                                <th>Team Name</th>
+                                <th>Team Leader</th>
+                                <th>Members</th>
+                                <th>Project Submission</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5" class="text-center py-3 text-muted">Loading registered teams...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Event Info & Team Quick Actions -->
+        <div class="col-lg-4">
+            <!-- Team Action Box -->
+            <div class="content-card mb-4 border-start border-4 border-success">
+                <h5 class="fw-bold text-success mb-2"><i class="bi bi-lightning-charge-fill"></i> Team Workspace</h5>
+                <div id="teamActionContent">
+                    <div class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-secondary"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organizer Info Card -->
+            <div class="content-card">
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-shield-check"></i> Organizing Authority</h6>
+                <div class="mb-2">
+                    <strong class="text-dark small d-block">Organized by:</strong>
+                    <span class="text-secondary small" id="detailOrganizer">-</span>
+                </div>
+                <div class="mb-2">
+                    <strong class="text-dark small d-block">Team Size Limits:</strong>
+                    <span class="text-secondary small" id="detailTeamSize">-</span>
+                </div>
+                <div class="mt-3 pt-3 border-top text-center">
+                    <a href="/leaderboard?hackathon_id={{ hackathon_id }}" class="btn btn-sm btn-outline-inno w-100">
+                        <i class="bi bi-bar-chart-steps me-1"></i> View Event Leaderboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Create Team Modal -->
+<div class="modal fade" id="createTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-people-fill me-2"></i>Create Hackathon Team</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createTeamForm">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Team Name *</label>
+                        <input type="text" id="createTeamName" class="form-control" placeholder="e.g. CodeCrafters" required>
+                        <div class="form-text small">A unique invitation code will be generated for your teammates.</div>
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-info-circle me-1"></i> Executed using stored procedure <code class="text-dark fw-bold">sp_create_team_with_leader</code> under an ACID transaction.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="createTeamSubmitBtn">Create & Form Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Join Team Modal -->
+<div class="modal fade" id="joinTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-key-fill me-2"></i>Join Team by Invitation Code</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="joinTeamForm">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Team Invitation Code *</label>
+                        <input type="text" id="joinInvitationCode" class="form-control text-uppercase" placeholder="e.g. INNO-CRAFT1" required>
+                        <div class="form-text small">Enter the 10-character code provided by your team leader.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Your Role in Team</label>
+                        <input type="text" id="joinRoleInTeam" class="form-control" placeholder="e.g. Frontend Developer / ML Engineer">
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-shield-lock me-1"></i> Enforces maximum team size limits via <code class="text-dark fw-bold">sp_join_team_by_code</code>.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno" id="joinTeamSubmitBtn">Join Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const hackathonId = {{ hackathon_id }};
+
+async function loadHackathonDetail() {
+    const res = await apiFetch(`/api/hackathons/${hackathonId}`);
+    if (!res || !res.ok || !res.data || !res.data.success) {
+        showToast('Failed to load hackathon details.', 'danger');
+        return;
+    }
+
+    const h = res.data.hackathon;
+    document.getElementById('detailTitle').textContent = h.title;
+    document.getElementById('detailTheme').textContent = h.theme;
+    document.getElementById('detailHost').textContent = h.host_college;
+    document.getElementById('detailDeadline').textContent = h.registration_deadline;
+    document.getElementById('detailDates').textContent = `${h.start_date} to ${h.end_date}`;
+    document.getElementById('detailPrize').textContent = h.prize_pool;
+    document.getElementById('detailDescription').textContent = h.description;
+    document.getElementById('detailEligibility').textContent = h.eligibility || 'Open to all students.';
+    document.getElementById('detailVenue').textContent = h.venue || 'Campus / Virtual';
+    document.getElementById('detailOrganizer').textContent = h.organizer_name;
+    document.getElementById('detailTeamSize').textContent = `${h.min_team_size} - ${h.max_team_size} Members per Team`;
+
+    // Badges
+    const typeBadge = document.getElementById('detailTypeBadge');
+    typeBadge.className = `badge ${h.hackathon_type === 'Internal' ? 'badge-internal' : 'badge-external'}`;
+    typeBadge.textContent = `${h.hackathon_type} Hackathon`;
+
+    const statusBadge = document.getElementById('detailStatusBadge');
+    statusBadge.className = `badge ${h.status === 'Open' ? 'badge-status-open' : 'bg-secondary'}`;
+    statusBadge.textContent = h.status;
+
+    document.getElementById('detailModeBadge').innerHTML = `<i class="bi bi-broadcast me-1"></i> ${h.mode}`;
+
+    // Criteria Table
+    const critTable = document.querySelector('#criteriaTable tbody');
+    const criteria = h.evaluation_criteria || [];
+    if (criteria.length === 0) {
+        critTable.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No criteria defined yet.</td></tr>';
+    } else {
+        critTable.innerHTML = criteria.map(c => `
+            <tr>
+                <td class="fw-semibold text-primary">${c.criteria_name}</td>
+                <td>${c.max_score} pts</td>
+                <td>${c.weight_pct}%</td>
+            </tr>
+        `).join('');
+    }
+
+    // Teams Roster Table
+    const teamsTable = document.querySelector('#teamsRosterTable tbody');
+    const teams = h.teams || [];
+    document.getElementById('teamCountBadge').textContent = `${teams.length} Teams Registered`;
+    if (teams.length === 0) {
+        teamsTable.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No teams have registered yet. Be the first!</td></tr>';
+    } else {
+        teamsTable.innerHTML = teams.map(t => `
+            <tr>
+                <td class="fw-bold">${t.team_name}</td>
+                <td>${t.leader_name}</td>
+                <td><span class="badge bg-light text-dark border">${t.member_count} Members</span></td>
+                <td class="small">${t.project_title || '<span class="text-muted">Not submitted yet</span>'}</td>
+                <td><span class="badge ${t.submission_status === 'Evaluated' ? 'bg-success' : 'bg-info'}">${t.submission_status || 'Draft'}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    // User Context & Action Area
+    const ctx = h.user_context || {};
+    const actionArea = document.getElementById('actionArea');
+    const teamActionContent = document.getElementById('teamActionContent');
+
+    if (!ctx.registered) {
+        actionArea.innerHTML = `
+            <button class="btn btn-primary-inno" onclick="registerThisHackathon()">
+                <i class="bi bi-check-circle me-1"></i> Register for Hackathon
+            </button>
+        `;
+        teamActionContent.innerHTML = `
+            <p class="small text-secondary mb-3">You must register for this hackathon before creating or joining a team.</p>
+            <button class="btn btn-sm btn-primary-inno w-100" onclick="registerThisHackathon()">
+                Register Now
+            </button>
+        `;
+    } else if (!ctx.team) {
+        actionArea.innerHTML = `
+            <span class="badge bg-success py-2 px-3 fs-7"><i class="bi bi-check2"></i> Registered</span>
+        `;
+        teamActionContent.innerHTML = `
+            <p class="small text-secondary mb-3">You are registered! Form a new team or join an existing team using a code.</p>
+            <div class="d-grid gap-2">
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#createTeamModal">
+                    <i class="bi bi-plus-circle me-1"></i> Create New Team
+                </button>
+                <button class="btn btn-sm btn-outline-inno" data-bs-toggle="modal" data-bs-target="#joinTeamModal">
+                    <i class="bi bi-key me-1"></i> Join with Code
+                </button>
+            </div>
+        `;
+    } else {
+        actionArea.innerHTML = `
+            <a href="/teams" class="btn btn-success btn-sm">
+                <i class="bi bi-people me-1"></i> Go to Team (${ctx.team.team_name})
+            </a>
+        `;
+        teamActionContent.innerHTML = `
+            <div class="p-3 bg-light rounded-3 mb-3">
+                <div class="fw-bold text-dark">${ctx.team.team_name}</div>
+                <div class="small text-muted mb-2">Role: ${ctx.team.role_in_team}</div>
+                <div class="small fw-semibold text-primary">Invitation Code:</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <code class="fs-6 fw-bold px-2 py-1 bg-white border rounded">${ctx.team.invitation_code}</code>
+                    <button class="btn btn-sm btn-light border py-1 px-2" onclick="copyToClipboard('${ctx.team.invitation_code}')" title="Copy Code">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+            <a href="/teams" class="btn btn-sm btn-primary-inno w-100">
+                Open Team Workspace & Submit Project &rarr;
+            </a>
+        `;
+    }
+}
+
+async function registerThisHackathon() {
+    const res = await apiFetch('/api/hackathons/register', {
+        method: 'POST',
+        body: { hackathon_id: hackathonId }
+    });
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Registered successfully!', 'success');
+        loadHackathonDetail();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Registration failed.', 'danger');
+    }
+}
+
+// Create Team Form Handler
+document.getElementById('createTeamForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('createTeamSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+
+    const team_name = document.getElementById('createTeamName').value.trim();
+    const res = await apiFetch('/api/teams/create', {
+        method: 'POST',
+        body: { hackathon_id: hackathonId, team_name }
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = 'Create & Form Team';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Team created successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('createTeamModal')).hide();
+        loadHackathonDetail();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to create team.', 'danger');
+    }
+});
+
+// Join Team Form Handler
+document.getElementById('joinTeamForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('joinTeamSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Joining...';
+
+    const invitation_code = document.getElementById('joinInvitationCode').value.trim();
+    const role_in_team = document.getElementById('joinRoleInTeam').value.trim();
+
+    const res = await apiFetch('/api/teams/join', {
+        method: 'POST',
+        body: { invitation_code, role_in_team }
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = 'Join Team';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Joined team successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('joinTeamModal')).hide();
+        loadHackathonDetail();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to join team.', 'danger');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadHackathonDetail);
+</script>
+{% endblock %}

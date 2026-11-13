@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Judge Evaluations & Scoring – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Judge Project Evaluation Console</h1>
+            <div class="small text-muted">Review project source codes, evaluate technical execution, and submit rubric scores.</div>
+        </div>
+        <a href="/leaderboard" class="btn btn-outline-inno btn-sm mt-2 mt-md-0">
+            <i class="bi bi-bar-chart-steps me-1"></i> View Live Leaderboard
+        </a>
+    </div>
+
+    <!-- Assigned Projects Content Card -->
+    <div class="content-card">
+        <div class="content-card-header">
+            <div>
+                <h5 class="content-card-title"><i class="bi bi-kanban text-primary"></i> Assigned Hackathon Projects</h5>
+                <div class="small text-muted">Projects requiring evaluation from assigned hackathons.</div>
+            </div>
+            <span class="badge bg-light text-dark border" id="assignedBadge">0 Projects</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="judgeProjectsTable">
+                <thead>
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Team Name</th>
+                        <th>Hackathon</th>
+                        <th>Repository / Demo</th>
+                        <th>Score (0-100)</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading assigned projects...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Evaluation Rubric Scoring Modal -->
+<div class="modal fade" id="scoringModal" tabindex="-1" aria-labelledby="scoringModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="scoringModalLabel"><i class="bi bi-pencil-square me-2"></i>Project Scoring Rubric</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="evaluationForm">
+                <input type="hidden" id="evalProjectId">
+                <div class="modal-body p-4">
+                    <!-- Project Quick Brief -->
+                    <div class="p-3 bg-light rounded-3 mb-4 border">
+                        <h5 class="fw-bold text-primary mb-1" id="evalModalProjTitle">-</h5>
+                        <div class="small text-muted mb-2">Team: <strong id="evalModalTeamName" class="text-dark">-</strong> | Event: <span id="evalModalHackTitle">-</span></div>
+                        <p class="small text-secondary mb-2" id="evalModalAbstract">-</p>
+                        <div class="d-flex gap-2">
+                            <a id="evalModalGithub" href="#" target="_blank" class="btn btn-sm btn-outline-dark"><i class="bi bi-github"></i> Inspect GitHub Repository</a>
+                            <a id="evalModalDocs" href="#" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-text"></i> Architecture Docs</a>
+                        </div>
+                    </div>
+
+                    <!-- 4-Part Rubric Sliders / Inputs (0-25 Each) -->
+                    <div class="row g-4 mb-3">
+                        <div class="col-md-6">
+                            <div class="card p-3 border rounded-3 bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small text-primary mb-0">1. Innovation & Originality</label>
+                                    <span class="badge bg-primary fs-7" id="dispInnovation">0.00 / 25</span>
+                                </div>
+                                <input type="range" class="form-range" id="scoreInnovation" min="0" max="25" step="0.5" value="0" oninput="updateScores()">
+                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">Novelty of concept, problem framing, and creative design thinking.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card p-3 border rounded-3 bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small text-primary mb-0">2. Feasibility & Utility</label>
+                                    <span class="badge bg-primary fs-7" id="dispFeasibility">0.00 / 25</span>
+                                </div>
+                                <input type="range" class="form-range" id="scoreFeasibility" min="0" max="25" step="0.5" value="0" oninput="updateScores()">
+                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">Practical institutional relevance, scalability, and implementation potential.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card p-3 border rounded-3 bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small text-primary mb-0">3. Technical & DB Design</label>
+                                    <span class="badge bg-primary fs-7" id="dispTechnical">0.00 / 25</span>
+                                </div>
+                                <input type="range" class="form-range" id="scoreTechnical" min="0" max="25" step="0.5" value="0" oninput="updateScores()">
+                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">Code quality, normalization (3NF), indexing, and backend integrity.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card p-3 border rounded-3 bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small text-primary mb-0">4. UI/UX & Presentation</label>
+                                    <span class="badge bg-primary fs-7" id="dispPresentation">0.00 / 25</span>
+                                </div>
+                                <input type="range" class="form-range" id="scorePresentation" min="0" max="25" step="0.5" value="0" oninput="updateScores()">
+                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">User flow, responsiveness, styling consistency, and final live pitch.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Score Display Card -->
+                    <div class="card p-3 rounded-3 bg-light border border-primary mb-3 text-center">
+                        <div class="small fw-bold text-uppercase text-secondary">Computed Aggregate Score</div>
+                        <div class="display-6 fw-bold text-primary my-1" id="dispTotalScore">0.00 / 100.00</div>
+                        <div class="small text-muted">
+                            Automatically verified and checked via database trigger <code class="text-primary">trg_before_evaluation_insert</code>.
+                        </div>
+                    </div>
+
+                    <!-- Qualitative Feedback -->
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Judge Constructive Feedback & Recommendations *</label>
+                        <textarea id="evalFeedback" class="form-control" rows="3" placeholder="Highlight strengths, architecture remarks, and areas for refinement..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno" id="submitEvalBtn">
+                        <i class="bi bi-check2-circle me-1"></i> Submit Official Evaluation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let assignedProjects = [];
+
+async function loadAssignedProjects() {
+    const res = await apiFetch('/api/evaluations/assigned-projects');
+    const tbody = document.querySelector('#judgeProjectsTable tbody');
+
+    if (res && res.ok && res.data && res.data.success) {
+        assignedProjects = res.data.projects || [];
+        document.getElementById('assignedBadge').textContent = `${assignedProjects.length} Projects`;
+
+        if (assignedProjects.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No projects currently assigned to you for evaluation.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = assignedProjects.map(p => `
+            <tr>
+                <td>
+                    <div class="fw-bold text-primary">${p.project_title}</div>
+                    <div class="small text-muted text-truncate" style="max-width: 250px;">${p.abstract}</div>
+                </td>
+                <td class="fw-semibold">${p.team_name}</td>
+                <td class="small text-secondary">${p.hackathon_title}</td>
+                <td>
+                    ${p.github_repo_url ? `<a href="${p.github_repo_url}" target="_blank" class="badge bg-light text-dark border me-1"><i class="bi bi-github"></i> Code</a>` : ''}
+                    ${p.documentation_url ? `<a href="${p.documentation_url}" target="_blank" class="badge bg-light text-secondary border"><i class="bi bi-file-text"></i> Docs</a>` : ''}
+                </td>
+                <td>
+                    <span class="fw-bold ${p.is_evaluated ? 'text-success' : 'text-muted'}">
+                        ${p.is_evaluated ? p.my_score + ' pts' : 'Pending'}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge ${p.is_evaluated ? 'bg-success' : 'bg-warning text-dark'}">
+                        ${p.is_evaluated ? 'Evaluated' : 'Pending'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary-inno py-1 px-2" onclick="openScoringModal(${p.project_id})">
+                        ${p.is_evaluated ? 'Edit Score' : 'Score Project'}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function updateScores() {
+    const inn = parseFloat(document.getElementById('scoreInnovation').value) || 0;
+    const fea = parseFloat(document.getElementById('scoreFeasibility').value) || 0;
+    const tec = parseFloat(document.getElementById('scoreTechnical').value) || 0;
+    const pre = parseFloat(document.getElementById('scorePresentation').value) || 0;
+
+    document.getElementById('dispInnovation').textContent = inn.toFixed(2) + ' / 25';
+    document.getElementById('dispFeasibility').textContent = fea.toFixed(2) + ' / 25';
+    document.getElementById('dispTechnical').textContent = tec.toFixed(2) + ' / 25';
+    document.getElementById('dispPresentation').textContent = pre.toFixed(2) + ' / 25';
+
+    const total = inn + fea + tec + pre;
+    document.getElementById('dispTotalScore').textContent = total.toFixed(2) + ' / 100.00';
+}
+
+function openScoringModal(projectId) {
+    const proj = assignedProjects.find(p => p.project_id === projectId);
+    if (!proj) return;
+
+    document.getElementById('evalProjectId').value = proj.project_id;
+    document.getElementById('evalModalProjTitle').textContent = proj.project_title;
+    document.getElementById('evalModalTeamName').textContent = proj.team_name;
+    document.getElementById('evalModalHackTitle').textContent = proj.hackathon_title;
+    document.getElementById('evalModalAbstract').textContent = proj.abstract;
+
+    const gh = document.getElementById('evalModalGithub');
+    if (proj.github_repo_url) {
+        gh.href = proj.github_repo_url;
+        gh.style.display = 'inline-flex';
+    } else {
+        gh.style.display = 'none';
+    }
+
+    const doc = document.getElementById('evalModalDocs');
+    if (proj.documentation_url) {
+        doc.href = proj.documentation_url;
+        doc.style.display = 'inline-flex';
+    } else {
+        doc.style.display = 'none';
+    }
+
+    // Prefill scores if evaluated
+    document.getElementById('scoreInnovation').value = proj.innovation_score || 0;
+    document.getElementById('scoreFeasibility').value = proj.feasibility_score || 0;
+    document.getElementById('scoreTechnical').value = proj.technical_score || 0;
+    document.getElementById('scorePresentation').value = proj.presentation_score || 0;
+    document.getElementById('evalFeedback').value = proj.feedback || '';
+
+    updateScores();
+
+    new bootstrap.Modal(document.getElementById('scoringModal')).show();
+}
+
+document.getElementById('evaluationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitEvalBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Recording...';
+
+    const payload = {
+        project_id: parseInt(document.getElementById('evalProjectId').value),
+        innovation_score: parseFloat(document.getElementById('scoreInnovation').value),
+        feasibility_score: parseFloat(document.getElementById('scoreFeasibility').value),
+        technical_score: parseFloat(document.getElementById('scoreTechnical').value),
+        presentation_score: parseFloat(document.getElementById('scorePresentation').value),
+        feedback: document.getElementById('evalFeedback').value.trim()
+    };
+
+    const res = await apiFetch('/api/evaluations/submit', {
+        method: 'POST',
+        body: payload
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Submit Official Evaluation';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Evaluation saved successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('scoringModal')).hide();
+        loadAssignedProjects();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to submit evaluation.', 'danger');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadAssignedProjects);
+</script>
+{% endblock %}

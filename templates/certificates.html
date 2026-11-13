@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}My Certificates & Credentials – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">My Certificates & Verified Credentials</h1>
+            <div class="small text-muted">Cryptographically verifiable certificates issued by affiliated academic institutions and organizers.</div>
+        </div>
+        <a href="/verify-certificate" class="btn btn-outline-inno btn-sm mt-2 mt-md-0">
+            <i class="bi bi-shield-check me-1"></i> Public Verification Portal
+        </a>
+    </div>
+
+    <!-- Certificates Grid / List -->
+    <div class="row g-4" id="certificatesGrid">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="small text-muted mt-2">Loading verified certificates...</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadCertificates() {
+    const res = await apiFetch('/api/certificates');
+    const grid = document.getElementById('certificatesGrid');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const list = res.data.certificates || [];
+        if (list.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="bi bi-award fs-1 text-secondary"></i>
+                    <h5 class="fw-bold mt-3">No Certificates Issued Yet</h5>
+                    <p class="small text-muted">Participate in hackathons and submit projects to earn recognized achievement credentials.</p>
+                    <a href="/hackathons" class="btn btn-sm btn-primary-inno">Browse Hackathons</a>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = list.map(c => `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-white border-top border-4 ${c.certificate_type.includes('Winner') ? 'border-warning' : 'border-primary'} d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge ${c.certificate_type.includes('Winner') ? 'bg-warning text-dark' : 'bg-primary'} fw-bold">
+                            ${c.certificate_type}
+                        </span>
+                        <span class="small text-muted"><i class="bi bi-eye"></i> Verified ${c.verified_count} times</span>
+                    </div>
+
+                    <h5 class="fw-bold text-primary mb-1">${c.hackathon_title}</h5>
+                    <div class="small text-muted mb-3">Team: <strong class="text-dark">${c.team_name || 'Individual Participant'}</strong></div>
+
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <div class="small text-muted">Verification Code:</div>
+                        <code class="fw-bold text-dark fs-6">${c.certificate_code}</code>
+                    </div>
+
+                    <div class="small text-secondary mb-3">
+                        <div><strong>Issuing Body:</strong> ${c.college_name || 'InnoSphere Council'}</div>
+                        <div><strong>Issue Date:</strong> ${c.issue_date}</div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-2 border-top mt-auto">
+                        <a href="/api/certificates/download/${c.certificate_code}" class="btn btn-sm btn-primary-inno flex-grow-1" target="_blank">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+                        </a>
+                        <a href="/verify-certificate?code=${c.certificate_code}" class="btn btn-sm btn-outline-inno" title="Public Verification Link">
+                            <i class="bi bi-shield-check"></i> Verify
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadCertificates);
+</script>
+{% endblock %}

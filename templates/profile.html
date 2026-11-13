@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Participant 360° Profile</h1>
+            <div class="small text-muted">Manage academic details, technical skills, repository links, and track participation history.</div>
+        </div>
+        <button class="btn btn-primary-inno btn-sm mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="bi bi-pencil-square me-1"></i> Edit Profile Details
+        </button>
+    </div>
+
+    <!-- Main Profile Card -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <!-- Summary Card -->
+            <div class="content-card text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
+                    <i class="bi bi-person-circle fs-1"></i>
+                </div>
+                <h4 class="fw-bold mb-1" id="profFullName">{{ current_user.full_name }}</h4>
+                <div class="small text-muted mb-2" id="profEmail">{{ current_user.email }}</div>
+                <span class="badge badge-role badge-role-participant mb-3">Verified Student Participant</span>
+
+                <div class="border-top pt-3 text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small fw-bold text-primary">Profile Completion</span>
+                        <span class="badge bg-success" id="profPctBadge">0%</span>
+                    </div>
+                    <div class="profile-meter-container">
+                        <div class="profile-meter-bar" id="profMeterBar" style="width: 0%;"></div>
+                    </div>
+                    <div class="text-muted text-center mt-1" style="font-size: 0.72rem;">
+                        Triggered by <code class="text-primary">fn_calculate_profile_completion</code>
+                    </div>
+                </div>
+
+                <div class="border-top mt-3 pt-3 text-start small">
+                    <div class="mb-2"><strong class="text-dark">College:</strong> <span id="profCollege" class="text-secondary">-</span></div>
+                    <div class="mb-2"><strong class="text-dark">Department:</strong> <span id="profDept" class="text-secondary">-</span></div>
+                    <div class="mb-2"><strong class="text-dark">Roll Number:</strong> <span id="profRoll" class="text-secondary">-</span></div>
+                    <div class="mb-2"><strong class="text-dark">Year / Semester:</strong> <span id="profYearSem" class="text-secondary">-</span></div>
+                    <div class="mb-2"><strong class="text-dark">Phone:</strong> <span id="profPhone" class="text-secondary">-</span></div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-2 pt-3 border-top" id="socialLinks">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Bio & Technical Skills -->
+            <div class="content-card mb-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-info-circle me-1"></i> About & Bio</h5>
+                <p class="text-secondary mb-4" id="profBio" style="line-height: 1.6;">
+                    No biography provided yet. Click "Edit Profile Details" to write a short introduction.
+                </p>
+
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-tools me-1"></i> Technical Skills</h5>
+                <div class="d-flex flex-wrap gap-2 mb-4" id="skillsContainer">
+                    <span class="text-muted small">No technical skills added.</span>
+                </div>
+
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-lightbulb me-1"></i> Innovation & Research Interests</h5>
+                <div class="text-secondary small" id="profInterests">
+                    No research interests listed.
+                </div>
+            </div>
+
+            <!-- Participation History & Certificates -->
+            <div class="content-card">
+                <ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold small" id="hackathons-tab" data-bs-toggle="tab" data-bs-target="#hackathonsPane" type="button" role="tab">Registered Hackathons</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold small" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teamsPane" type="button" role="tab">Teams & Projects</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold small" id="certs-tab" data-bs-toggle="tab" data-bs-target="#certsPane" type="button" role="tab">Verified Certificates</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="profileTabContent">
+                    <div class="tab-pane fade show active" id="hackathonsPane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table-custom" id="historyHackathonsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Hackathon</th>
+                                        <th>Type</th>
+                                        <th>Registered On</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="4" class="text-center py-3 text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="teamsPane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table-custom" id="historyTeamsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Team Name</th>
+                                        <th>Hackathon</th>
+                                        <th>Role</th>
+                                        <th>Project</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="5" class="text-center py-3 text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="certsPane" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table-custom" id="historyCertsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Certificate Code</th>
+                                        <th>Type</th>
+                                        <th>Hackathon</th>
+                                        <th>Issue Date</th>
+                                        <th>Verification</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="5" class="text-center py-3 text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="editProfileModalLabel"><i class="bi bi-pencil-square me-2"></i>Edit Participant Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editProfileForm">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Academic Roll Number *</label>
+                            <input type="text" id="editRollNumber" class="form-control" placeholder="e.g. CE-2024-042" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Department *</label>
+                            <select id="editDepartment" class="form-select" required>
+                                <option value="">Loading departments...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Branch Name</label>
+                            <input type="text" id="editBranch" class="form-control" placeholder="e.g. Computer Engineering">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Year of Study (1-5)</label>
+                            <input type="number" id="editYear" class="form-control" min="1" max="5" placeholder="2">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Semester (1-10)</label>
+                            <input type="number" id="editSemester" class="form-control" min="1" max="10" placeholder="4">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Phone Number</label>
+                            <input type="text" id="editPhone" class="form-control" placeholder="+91 9823412345">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">GitHub Profile URL</label>
+                            <input type="url" id="editGithub" class="form-control" placeholder="https://github.com/username">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">LinkedIn Profile URL</label>
+                            <input type="url" id="editLinkedin" class="form-control" placeholder="https://linkedin.com/in/username">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Portfolio / Website URL</label>
+                            <input type="url" id="editPortfolio" class="form-control" placeholder="https://myportfolio.dev">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Technical Skills (comma-separated) *</label>
+                            <input type="text" id="editSkills" class="form-control" placeholder="Python, Flask, MySQL, Docker, React" required>
+                            <div class="form-text small">Enter skills separated by commas for skill tag generation.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Research Interests</label>
+                            <input type="text" id="editInterests" class="form-control" placeholder="Distributed Databases, Machine Learning, Edge Computing">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Short Bio</label>
+                            <textarea id="editBio" class="form-control" rows="3" placeholder="Tell other innovators about yourself, your hackathon goals, and project expertise..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentProfileData = null;
+
+async function loadProfile() {
+    const res = await apiFetch('/api/participants/profile');
+    if (res && res.ok && res.data && res.data.success) {
+        const p = res.data.profile;
+        currentProfileData = p;
+
+        document.getElementById('profRoll').textContent = p.roll_number || 'Not Set';
+        document.getElementById('profCollege').textContent = p.college_name || 'Independent';
+        document.getElementById('profDept').textContent = p.department_name || 'General';
+        document.getElementById('profYearSem').textContent = (p.year_of_study ? `Year ${p.year_of_study}` : '') + (p.semester ? `, Sem ${p.semester}` : '-');
+        document.getElementById('profPhone').textContent = p.phone_number || 'Not Set';
+
+        const pct = p.profile_completion_pct || 15;
+        document.getElementById('profPctBadge').textContent = pct + '%';
+        document.getElementById('profMeterBar').style.width = pct + '%';
+
+        if (p.bio) document.getElementById('profBio').textContent = p.bio;
+        if (p.interests) document.getElementById('profInterests').textContent = p.interests;
+
+        // Render Skills
+        const skillsContainer = document.getElementById('skillsContainer');
+        if (p.technical_skills) {
+            const skills = p.technical_skills.split(',').map(s => s.trim()).filter(Boolean);
+            skillsContainer.innerHTML = skills.map(s => `
+                <span class="badge bg-light text-primary border px-3 py-2 fs-7 fw-semibold">
+                    <i class="bi bi-tag-fill text-muted me-1"></i> ${s}
+                </span>
+            `).join('');
+        }
+
+        // Social Links
+        const socialLinks = document.getElementById('socialLinks');
+        socialLinks.innerHTML = `
+            ${p.github_url ? `<a href="${p.github_url}" target="_blank" class="btn btn-sm btn-outline-dark" title="GitHub"><i class="bi bi-github"></i> GitHub</a>` : ''}
+            ${p.linkedin_url ? `<a href="${p.linkedin_url}" target="_blank" class="btn btn-sm btn-outline-primary" title="LinkedIn"><i class="bi bi-linkedin"></i> LinkedIn</a>` : ''}
+            ${p.portfolio_url ? `<a href="${p.portfolio_url}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Portfolio"><i class="bi bi-globe"></i> Portfolio</a>` : ''}
+        `;
+    }
+
+    // Load History
+    const histRes = await apiFetch('/api/participants/history');
+    if (histRes && histRes.ok && histRes.data && histRes.data.success) {
+        const regs = histRes.data.registrations || [];
+        const teams = histRes.data.teams || [];
+        const certs = histRes.data.certificates || [];
+
+        // Hackathons Tab
+        const hTable = document.querySelector('#historyHackathonsTable tbody');
+        hTable.innerHTML = regs.length === 0 ? '<tr><td colspan="4" class="text-center text-muted">No registrations found</td></tr>' :
+            regs.map(r => `
+                <tr>
+                    <td class="fw-semibold text-primary">${r.hackathon_title}</td>
+                    <td><span class="badge ${r.hackathon_type === 'Internal' ? 'badge-internal' : 'badge-external'}">${r.hackathon_type}</span></td>
+                    <td>${r.registered_at}</td>
+                    <td><span class="badge bg-success">${r.registration_status}</span></td>
+                </tr>
+            `).join('');
+
+        // Teams Tab
+        const tTable = document.querySelector('#historyTeamsTable tbody');
+        tTable.innerHTML = teams.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">No team memberships found</td></tr>' :
+            teams.map(t => `
+                <tr>
+                    <td class="fw-semibold">${t.team_name}</td>
+                    <td>${t.hackathon_title}</td>
+                    <td><span class="badge bg-light text-dark border">${t.role_in_team}</span></td>
+                    <td>${t.project_title || '<span class="text-muted small">Not submitted</span>'}</td>
+                    <td><span class="badge bg-info">${t.submission_status || 'Draft'}</span></td>
+                </tr>
+            `).join('');
+
+        // Certificates Tab
+        const cTable = document.querySelector('#historyCertsTable tbody');
+        cTable.innerHTML = certs.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">No certificates earned yet</td></tr>' :
+            certs.map(c => `
+                <tr>
+                    <td><code class="fw-bold">${c.certificate_code}</code></td>
+                    <td><span class="badge bg-warning text-dark">${c.certificate_type}</span></td>
+                    <td>${c.hackathon_title}</td>
+                    <td>${c.issue_date}</td>
+                    <td><a href="/verify-certificate?code=${c.certificate_code}" class="btn btn-sm btn-outline-inno py-0">Verify</a></td>
+                </tr>
+            `).join('');
+    }
+}
+
+// Populate Departments for Modal
+async function loadDepartments() {
+    const res = await apiFetch('/api/admin/departments');
+    const select = document.getElementById('editDepartment');
+    if (res && res.ok && res.data && res.data.success) {
+        select.innerHTML = '<option value="">-- Select Department --</option>' +
+            res.data.departments.map(d => `<option value="${d.department_id}">${d.department_name} (${d.department_code})</option>`).join('');
+    }
+}
+
+// Prefill Modal on Show
+document.getElementById('editProfileModal').addEventListener('show.bs.modal', () => {
+    if (currentProfileData) {
+        document.getElementById('editRollNumber').value = currentProfileData.roll_number || '';
+        document.getElementById('editDepartment').value = currentProfileData.department_id || '';
+        document.getElementById('editBranch').value = currentProfileData.branch || '';
+        document.getElementById('editYear').value = currentProfileData.year_of_study || '';
+        document.getElementById('editSemester').value = currentProfileData.semester || '';
+        document.getElementById('editPhone').value = currentProfileData.phone_number || '';
+        document.getElementById('editSkills').value = currentProfileData.technical_skills || '';
+        document.getElementById('editInterests').value = currentProfileData.interests || '';
+        document.getElementById('editGithub').value = currentProfileData.github_url || '';
+        document.getElementById('editLinkedin').value = currentProfileData.linkedin_url || '';
+        document.getElementById('editPortfolio').value = currentProfileData.portfolio_url || '';
+        document.getElementById('editBio').value = currentProfileData.bio || '';
+    }
+});
+
+// Save Profile via PUT
+document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('saveProfileBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+    const payload = {
+        roll_number: document.getElementById('editRollNumber').value.trim(),
+        department_id: document.getElementById('editDepartment').value || null,
+        branch: document.getElementById('editBranch').value.trim(),
+        year_of_study: document.getElementById('editYear').value || null,
+        semester: document.getElementById('editSemester').value || null,
+        phone_number: document.getElementById('editPhone').value.trim(),
+        technical_skills: document.getElementById('editSkills').value.trim(),
+        interests: document.getElementById('editInterests').value.trim(),
+        github_url: document.getElementById('editGithub').value.trim(),
+        linkedin_url: document.getElementById('editLinkedin').value.trim(),
+        portfolio_url: document.getElementById('editPortfolio').value.trim(),
+        bio: document.getElementById('editBio').value.trim()
+    };
+
+    const res = await apiFetch('/api/participants/profile', {
+        method: 'PUT',
+        body: payload
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = 'Save Changes';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Profile updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+        loadProfile();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to update profile.', 'danger');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+    loadDepartments();
+});
+</script>
+{% endblock %}

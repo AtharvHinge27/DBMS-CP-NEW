@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Coordinator Console – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">College Coordinator Operations Console</h1>
+            <div class="small text-muted">Manage campus registrations, mark hackathon attendance, and issue merit & participation certificates.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <button class="btn btn-warning btn-sm fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#issueCertModal">
+                <i class="bi bi-award-fill me-1"></i> Issue Certificate
+            </button>
+            <a href="/hackathons" class="btn btn-primary-inno btn-sm">
+                <i class="bi bi-plus-circle me-1"></i> New Internal Event
+            </a>
+        </div>
+    </div>
+
+    <!-- Attendance Tracker Section -->
+    <div class="content-card mb-4">
+        <div class="content-card-header">
+            <div>
+                <h5 class="content-card-title"><i class="bi bi-person-check-fill text-success"></i> Hackathon Attendance & Check-In Roster</h5>
+                <div class="small text-muted">Mark participant attendance for official certificate issuance eligibility.</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="small fw-semibold text-muted mb-0">Hackathon:</label>
+                <select id="attendanceHackSelect" class="form-select form-select-sm" style="min-width: 250px;">
+                    <option value="">Loading events...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>Participant Name</th>
+                        <th>College & Department</th>
+                        <th>Roll Number</th>
+                        <th>Team Name</th>
+                        <th>Attendance Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center py-4 text-muted">Select a hackathon above to load participant roster.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Issue Certificate Modal -->
+<div class="modal fade" id="issueCertModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold"><i class="bi bi-award-fill me-2"></i>Issue Verified Certificate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="issueCertForm">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Target Hackathon *</label>
+                        <select id="certHackSelect" class="form-select" required>
+                            <option value="">Loading hackathons...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Recipient Participant *</label>
+                        <select id="certUserSelect" class="form-select" required>
+                            <option value="">Select hackathon first...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Certificate Type *</label>
+                        <select id="certTypeSelect" class="form-select" required>
+                            <option value="Winner">Winner (1st Place)</option>
+                            <option value="1st Runner Up">1st Runner Up (2nd Place)</option>
+                            <option value="2nd Runner Up">2nd Runner Up (3rd Place)</option>
+                            <option value="Participation" selected>Participation Certificate</option>
+                            <option value="Judge Recognition">Judge Recognition</option>
+                            <option value="Mentor Appreciation">Mentor Appreciation</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-shield-check me-1"></i> Handled via stored procedure <code class="text-dark fw-bold">sp_issue_certificate</code> with unique verification hash generation.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning fw-bold text-dark" id="issueCertBtn">Generate & Issue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadHackathonsForCoordinator() {
+    const res = await apiFetch('/api/hackathons');
+    const select = document.getElementById('attendanceHackSelect');
+    const modalSelect = document.getElementById('certHackSelect');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const hacks = res.data.hackathons || [];
+        const options = hacks.map(h => `<option value="${h.hackathon_id}">${h.title} (${h.hackathon_type})</option>`).join('');
+
+        select.innerHTML = options;
+        modalSelect.innerHTML = '<option value="">-- Select Hackathon --</option>' + options;
+
+        if (hacks.length > 0) {
+            loadAttendance(hacks[0].hackathon_id);
+        }
+    }
+}
+
+async function loadAttendance(hackathonId) {
+    if (!hackathonId) return;
+    const res = await apiFetch(`/api/evaluations/attendance/${hackathonId}`);
+    const tbody = document.querySelector('#attendanceTable tbody');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const list = res.data.attendance || [];
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No participants registered for this event.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(item => `
+            <tr>
+                <td>
+                    <div class="fw-bold text-dark">${item.full_name}</div>
+                    <div class="small text-muted">${item.email}</div>
+                </td>
+                <td class="small">
+                    <div>${item.college_name || 'Independent'}</div>
+                    <div class="text-muted">${item.branch || '-'}</div>
+                </td>
+                <td><code>${item.roll_number || 'N/A'}</code></td>
+                <td>${item.team_name ? `<span class="badge bg-light text-dark border">${item.team_name}</span>` : '<span class="text-muted small">No Team</span>'}</td>
+                <td>
+                    <span class="badge ${item.attendance_status === 'Present' ? 'bg-success' : item.attendance_status === 'Excused' ? 'bg-info' : 'bg-danger'}">
+                        ${item.attendance_status}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-success ${item.attendance_status === 'Present' ? 'active' : ''}" onclick="markAttendance(${hackathonId}, ${item.user_id}, 'Present')">Present</button>
+                        <button class="btn btn-outline-danger ${item.attendance_status === 'Absent' ? 'active' : ''}" onclick="markAttendance(${hackathonId}, ${item.user_id}, 'Absent')">Absent</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+async function markAttendance(hackathonId, userId, status) {
+    const res = await apiFetch('/api/evaluations/attendance/mark', {
+        method: 'POST',
+        body: { hackathon_id: hackathonId, user_id: userId, attendance_status: status }
+    });
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Attendance updated!', 'success');
+        loadAttendance(hackathonId);
+    } else {
+        showToast('Failed to mark attendance.', 'danger');
+    }
+}
+
+document.getElementById('attendanceHackSelect').addEventListener('change', (e) => {
+    loadAttendance(e.target.value);
+});
+
+// Load participants when hackathon changes in issue modal
+document.getElementById('certHackSelect').addEventListener('change', async (e) => {
+    const hackId = e.target.value;
+    const userSelect = document.getElementById('certUserSelect');
+    if (!hackId) {
+        userSelect.innerHTML = '<option value="">Select hackathon first...</option>';
+        return;
+    }
+
+    const res = await apiFetch(`/api/evaluations/attendance/${hackId}`);
+    if (res && res.ok && res.data && res.data.success) {
+        const users = res.data.attendance || [];
+        userSelect.innerHTML = users.map(u => `<option value="${u.user_id}">${u.full_name} (${u.email}) - Team: ${u.team_name || 'None'}</option>`).join('');
+    }
+});
+
+// Issue Certificate Submit
+document.getElementById('issueCertForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('issueCertBtn');
+    btn.disabled = true;
+
+    const payload = {
+        hackathon_id: parseInt(document.getElementById('certHackSelect').value),
+        user_id: parseInt(document.getElementById('certUserSelect').value),
+        certificate_type: document.getElementById('certTypeSelect').value
+    };
+
+    const res = await apiFetch('/api/certificates/issue', {
+        method: 'POST',
+        body: payload
+    });
+
+    btn.disabled = false;
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Certificate generated!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('issueCertModal')).hide();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to issue certificate.', 'danger');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadHackathonsForCoordinator);
+</script>
+{% endblock %}

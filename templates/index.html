@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Home – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-3">
+
+    <!-- Hero Banner (ATAL Academy Inspired Modern Banner) -->
+    <div class="card border-0 shadow-sm rounded-4 text-white overflow-hidden mb-4" style="background: linear-gradient(135deg, #0f2b5c 0%, #1e3a8a 60%, #0369a1 100%);">
+        <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-10 border border-white border-opacity-25 mb-3">
+                        <i class="bi bi-patch-check-fill text-warning"></i>
+                        <span class="small fw-semibold">Next-Gen Multi-College Innovation Ecosystem</span>
+                    </div>
+                    <h1 class="display-5 fw-bold mb-3">InnoSphere Innovation Portal</h1>
+                    <p class="lead text-light text-opacity-90 mb-4" style="max-width: 650px;">
+                        Inspired by the AICTE ATAL Academy portal. Discover internal institutional hackathons and prestigious national challenges, form cross-departmental teams, submit projects, and track real-time evaluations.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/hackathons" class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-compass me-1"></i> Explore Hackathons
+                        </a>
+                        {% if not is_authenticated %}
+                        <a href="/register" class="btn btn-outline-light fw-semibold px-4 py-2 rounded-pill">
+                            <i class="bi bi-person-plus me-1"></i> Create Student Account
+                        </a>
+                        {% else %}
+                        <a href="/dashboard" class="btn btn-outline-light fw-semibold px-4 py-2 rounded-pill">
+                            <i class="bi bi-speedometer2 me-1"></i> Go to Dashboard
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 d-none d-lg-block text-center">
+                    <i class="bi bi-cpu-fill text-white text-opacity-25" style="font-size: 10rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Platform Statistics -->
+    <div class="row g-3 mb-4" id="statsRow">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Affiliated Colleges</span>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-buildings"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statColleges">3+</div>
+                <div class="small text-muted mt-1">Multi-tenant institutions</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Active Hackathons</span>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statHackathons">4+</div>
+                <div class="small text-muted mt-1">Internal & National</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Student Innovators</span>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statStudents">10+</div>
+                <div class="small text-muted mt-1">Registered participants</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Verified Certificates</span>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statCerts">6+</div>
+                <div class="small text-muted mt-1">Cryptographically verified</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Hackathons Preview -->
+    <div class="content-card">
+        <div class="content-card-header">
+            <div>
+                <h2 class="content-card-title"><i class="bi bi-stars text-warning"></i> Active & Upcoming Hackathons</h2>
+                <div class="small text-muted">Browse both internal college hackathons and prestigious external national opportunities.</div>
+            </div>
+            <a href="/hackathons" class="btn btn-sm btn-outline-inno">View All Opportunities <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-3" id="featuredHackathonsList">
+            <div class="col-12 text-center py-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="small text-muted mt-2">Fetching hackathons...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Modules Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="content-card h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-person-vcard"></i>
+                    </div>
+                    <h3 class="h6 fw-bold mb-0">Participant 360° Profile</h3>
+                </div>
+                <p class="small text-secondary mb-3">
+                    Personal, academic, and technical profile management with live completion score calculated automatically by MySQL stored functions.
+                </p>
+                <a href="/profile" class="small fw-semibold text-primary text-decoration-none">Explore Profile Features &rarr;</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="content-card h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="h6 fw-bold mb-0">Team Collaboration Hub</h3>
+                </div>
+                <p class="small text-secondary mb-3">
+                    Create teams with auto-generated unique invitation codes, enforce maximum team sizes, and submit project repositories with full audit trails.
+                </p>
+                <a href="/teams" class="small fw-semibold text-success text-decoration-none">Manage Teams &rarr;</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="content-card h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-check2-all"></i>
+                    </div>
+                    <h3 class="h6 fw-bold mb-0">Rubric Evaluations & Ranks</h3>
+                </div>
+                <p class="small text-secondary mb-3">
+                    Multi-criteria judging rubric (Innovation, Feasibility, Technical Execution, Presentation) feeding real-time SQL leaderboard views.
+                </p>
+                <a href="/leaderboard" class="small fw-semibold text-warning text-decoration-none">View Live Leaderboard &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Fetch and render hackathons on landing page
+    const res = await apiFetch('/api/hackathons?status=Open');
+    const container = document.getElementById('featuredHackathonsList');
+    if (res && res.ok && res.data && res.data.success) {
+        const list = res.data.hackathons.slice(0, 3);
+        if (list.length === 0) {
+            container.innerHTML = '<div class="col-12 text-center text-muted py-4">No active hackathons found.</div>';
+            return;
+        }
+
+        container.innerHTML = list.map(h => `
+            <div class="col-md-4">
+                <div class="card h-100 border rounded-3 p-3 shadow-sm hover-shadow">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge ${h.hackathon_type === 'Internal' ? 'badge-internal' : 'badge-external'}">
+                            ${h.hackathon_type} Hackathon
+                        </span>
+                        <span class="badge bg-light text-secondary border">
+                            <i class="bi bi-calendar-event me-1"></i> Due: ${h.registration_deadline}
+                        </span>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-primary">${h.title}</h5>
+                    <div class="small text-muted mb-2"><i class="bi bi-building me-1"></i> ${h.host_college}</div>
+                    <p class="small text-secondary flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        ${h.description}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                        <div class="small fw-semibold text-success">
+                            <i class="bi bi-gift-fill me-1"></i> ${h.prize_pool}
+                        </div>
+                        <a href="/hackathons/${h.hackathon_id}" class="btn btn-sm btn-outline-inno">
+                            Details &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+});
+</script>
+{% endblock %}

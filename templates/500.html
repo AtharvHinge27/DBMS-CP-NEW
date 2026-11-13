@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card border-0 shadow-sm rounded-4 p-5 bg-white mx-auto" style="max-width: 500px;">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-3"></i>
+        <h1 class="display-5 fw-bold text-danger">500</h1>
+        <h4 class="fw-bold text-dark mb-2">Internal Server Error</h4>
+        <p class="text-secondary small mb-4">
+            An unexpected error occurred while processing your database request. The transaction has been rolled back.
+        </p>
+        <a href="/dashboard" class="btn btn-primary-inno py-2">
+            <i class="bi bi-speedometer2 me-1"></i> Return to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

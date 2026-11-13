@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Live Leaderboard & Rankings – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Hackathon Project Leaderboard</h1>
+            <div class="small text-muted">Real-time rankings calculated using SQL View <code class="text-primary">vw_hackathon_leaderboard</code> with Window Function <code class="text-primary">DENSE_RANK()</code>.</div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+            <label class="small fw-semibold text-muted mb-0">Event:</label>
+            <select id="leaderboardHackSelect" class="form-select form-select-sm" style="min-width: 260px;">
+                <option value="">All Hackathons</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table Card -->
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="table-custom" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>Project & Solution</th>
+                        <th>Team & Leader</th>
+                        <th>College</th>
+                        <th>Judging Rounds</th>
+                        <th>Avg Score</th>
+                        <th>Criteria Breakdown</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading live leaderboard rankings...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadHackathonsDropdown() {
+    const res = await apiFetch('/api/hackathons');
+    const select = document.getElementById('leaderboardHackSelect');
+    if (res && res.ok && res.data && res.data.success) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedId = urlParams.get('hackathon_id');
+
+        select.innerHTML = '<option value="">All Hackathons</option>' +
+            res.data.hackathons.map(h => `
+                <option value="${h.hackathon_id}" ${selectedId == h.hackathon_id ? 'selected' : ''}>
+                    ${h.title} (${h.hackathon_type})
+                </option>
+            `).join('');
+    }
+}
+
+async function loadLeaderboard() {
+    const hackathonId = document.getElementById('leaderboardHackSelect').value;
+    let url = '/api/evaluations/leaderboard';
+    if (hackathonId) url += `?hackathon_id=${hackathonId}`;
+
+    const res = await apiFetch(url);
+    const tbody = document.querySelector('#leaderboardTable tbody');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const list = res.data.leaderboard || [];
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No evaluated projects on the leaderboard yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(item => {
+            let rankBadge = '';
+            if (item.leaderboard_rank === 1) {
+                rankBadge = '<span class="badge bg-warning text-dark px-2 py-1 fs-6"><i class="bi bi-trophy-fill"></i> #1</span>';
+            } else if (item.leaderboard_rank === 2) {
+                rankBadge = '<span class="badge bg-secondary text-white px-2 py-1 fs-6">#2</span>';
+            } else if (item.leaderboard_rank === 3) {
+                rankBadge = '<span class="badge bg-info text-white px-2 py-1 fs-6">#3</span>';
+            } else {
+                rankBadge = `<span class="fw-bold text-muted fs-6">#${item.leaderboard_rank}</span>`;
+            }
+
+            return `
+                <tr>
+                    <td class="text-center">${rankBadge}</td>
+                    <td>
+                        <div class="fw-bold text-primary">${item.project_title}</div>
+                        <div class="small text-muted">${item.hackathon_title}</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">${item.team_name}</div>
+                        <div class="small text-secondary">Lead: ${item.leader_name}</div>
+                    </td>
+                    <td class="small text-secondary">${item.college_name || 'Independent'}</td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border">${item.total_evaluations} Judge${item.total_evaluations === 1 ? '' : 's'}</span>
+                    </td>
+                    <td>
+                        <span class="fw-bold fs-6 text-success">${item.average_score}</span> <small class="text-muted">/ 100</small>
+                    </td>
+                    <td class="small text-secondary" style="font-size: 0.8rem;">
+                        <div>Inn: <strong>${item.avg_innovation}</strong> | Feas: <strong>${item.avg_feasibility}</strong></div>
+                        <div>Tech: <strong>${item.avg_technical}</strong> | Pres: <strong>${item.avg_presentation}</strong></div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+}
+
+document.getElementById('leaderboardHackSelect').addEventListener('change', loadLeaderboard);
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHackathonsDropdown();
+    loadLeaderboard();
+});
+</script>
+{% endblock %}

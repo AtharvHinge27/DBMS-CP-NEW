@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Teams & Project Workspace – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Action Bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Team Workspace & Project Submission</h1>
+            <div class="small text-muted">Manage your innovation teams, share invitation codes, and submit project repositories.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <button class="btn btn-outline-inno btn-sm" data-bs-toggle="modal" data-bs-target="#joinTeamModalGlobal">
+                <i class="bi bi-key me-1"></i> Join with Code
+            </button>
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createTeamModalGlobal">
+                <i class="bi bi-plus-circle me-1"></i> Create Team
+            </button>
+        </div>
+    </div>
+
+    <!-- Active Teams Selector / List -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="content-card">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-collection me-1"></i> My Teams</h5>
+                <div id="teamsNavList" class="d-flex flex-column gap-2">
+                    <div class="text-center py-4 text-muted">Loading teams...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8" id="teamDetailPane">
+            <div class="content-card text-center py-5">
+                <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+                <h5 class="fw-bold text-secondary mt-3">Select a Team</h5>
+                <p class="small text-muted">Choose a team from the left sidebar to view members and project submissions, or create a new team.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Create Team Modal (Global) -->
+<div class="modal fade" id="createTeamModalGlobal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-people-fill me-2"></i>Create New Innovation Team</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="globalCreateTeamForm">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Target Hackathon *</label>
+                        <select id="globalTeamHackathon" class="form-select" required>
+                            <option value="">Loading open hackathons...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Team Name *</label>
+                        <input type="text" id="globalTeamName" class="form-control" placeholder="e.g. NeuralNomads" required>
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-info-circle me-1"></i> Transactionally handled by <code class="text-dark fw-bold">sp_create_team_with_leader</code>.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="globalCreateTeamBtn">Create Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Join Team Modal (Global) -->
+<div class="modal fade" id="joinTeamModalGlobal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-key-fill me-2"></i>Join Team by Invitation Code</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="globalJoinTeamForm">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Invitation Code *</label>
+                        <input type="text" id="globalJoinCode" class="form-control text-uppercase" placeholder="e.g. INNO-NOMAD2" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Your Role in Team</label>
+                        <input type="text" id="globalJoinRole" class="form-control" placeholder="e.g. Full Stack Developer">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno" id="globalJoinBtn">Join Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let myTeams = [];
+let activeTeamId = null;
+
+async function loadTeams() {
+    const res = await apiFetch('/api/teams');
+    const container = document.getElementById('teamsNavList');
+
+    if (res && res.ok && res.data && res.data.success) {
+        myTeams = res.data.teams || [];
+        if (myTeams.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-muted small">
+                    You have not joined any teams yet.<br>
+                    <button class="btn btn-sm btn-outline-success mt-2" data-bs-toggle="modal" data-bs-target="#createTeamModalGlobal">
+                        Create Your First Team
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = myTeams.map(t => `
+            <button class="btn text-start p-3 border rounded-3 bg-white hover-bg-light ${activeTeamId === t.team_id ? 'border-primary shadow-sm' : ''}" onclick="selectTeam(${t.team_id})">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong class="text-primary">${t.team_name}</strong>
+                    <span class="badge ${t.is_leader ? 'bg-success' : 'bg-secondary'}">${t.is_leader ? 'Leader' : t.role_in_team}</span>
+                </div>
+                <div class="small text-muted text-truncate mb-2">${t.hackathon_title}</div>
+                <div class="d-flex justify-content-between align-items-center small text-secondary border-top pt-2">
+                    <span><i class="bi bi-people me-1"></i> ${t.current_members_count} Members</span>
+                    <span>${t.project_title ? '<i class="bi bi-check-circle-fill text-success"></i> Submitted' : '<i class="bi bi-clock text-warning"></i> Pending'}</span>
+                </div>
+            </button>
+        `).join('');
+
+        // Automatically select the first team if none selected
+        if (!activeTeamId && myTeams.length > 0) {
+            selectTeam(myTeams[0].team_id);
+        }
+    }
+}
+
+async function selectTeam(teamId) {
+    activeTeamId = teamId;
+    loadTeams(); // re-render sidebar active border
+
+    const res = await apiFetch(`/api/teams/${teamId}`);
+    const pane = document.getElementById('teamDetailPane');
+
+    if (!res || !res.ok || !res.data || !res.data.success) {
+        pane.innerHTML = '<div class="alert alert-danger">Failed to load team details.</div>';
+        return;
+    }
+
+    const t = res.data.team;
+    const members = res.data.members || [];
+    const p = res.data.project;
+    const isLeader = res.data.user_status.is_leader;
+
+    pane.innerHTML = `
+        <!-- Team Overview Banner -->
+        <div class="content-card mb-4 border-top border-4 border-primary">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <div>
+                    <h3 class="fw-bold text-primary mb-1">${t.team_name}</h3>
+                    <div class="small text-muted">Hackathon: <span class="fw-semibold text-dark">${t.hackathon_title}</span></div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small text-muted">Invitation Code:</span>
+                    <code class="fs-6 fw-bold px-2 py-1 bg-light border rounded text-dark">${t.invitation_code}</code>
+                    <button class="btn btn-sm btn-light border" onclick="copyToClipboard('${t.invitation_code}')" title="Copy Invitation Code">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="small text-muted">
+                Leader: <strong class="text-dark">${t.leader_name}</strong> (${t.leader_email}) | Capacity: ${members.length} / ${t.max_team_size} Members
+            </div>
+        </div>
+
+        <!-- Members Roster Table -->
+        <div class="content-card mb-4">
+            <div class="content-card-header">
+                <h5 class="content-card-title"><i class="bi bi-people-fill text-success"></i> Team Members Roster</h5>
+                <span class="badge bg-light text-dark border">${members.length} / ${t.max_team_size} Members</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Role in Team</th>
+                            <th>College</th>
+                            <th>Roll Number</th>
+                            <th>Technical Skills</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${members.map(m => `
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">${m.full_name}</div>
+                                    <div class="small text-muted">${m.email}</div>
+                                </td>
+                                <td><span class="badge ${m.role_in_team === 'Leader' || m.role_in_team.includes('Leader') ? 'bg-success' : 'bg-light text-dark border'}">${m.role_in_team}</span></td>
+                                <td class="small">${m.college_name || 'Independent'}</td>
+                                <td><code>${m.roll_number || 'N/A'}</code></td>
+                                <td class="small text-secondary" style="max-width: 220px;">${m.technical_skills || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Project Submission & Management Form -->
+        <div class="content-card border-top border-4 ${p ? 'border-success' : 'border-warning'}">
+            <div class="content-card-header">
+                <div>
+                    <h5 class="content-card-title"><i class="bi bi-file-earmark-code text-primary"></i> Hackathon Project Submission</h5>
+                    <div class="small text-muted">Official code repository and documentation links for judge evaluation.</div>
+                </div>
+                ${p ? `<span class="badge ${p.submission_status === 'Evaluated' ? 'badge-status-evaluated' : 'badge-status-submitted'} fs-7">${p.submission_status}</span>` : '<span class="badge bg-warning text-dark">Not Submitted</span>'}
+            </div>
+
+            <form id="projectSubmitForm">
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold">Project Title *</label>
+                        <input type="text" id="projTitle" class="form-control" value="${p ? (p.title || '') : ''}" placeholder="e.g. EduPulse – AI-Powered Institutional Analytics" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold">Tech Stack (comma-separated)</label>
+                        <input type="text" id="projTechStack" class="form-control" value="${p ? (p.tech_stack || '') : ''}" placeholder="e.g. Python, Flask, MySQL, Bootstrap 5, OpenCV">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">GitHub Repository URL *</label>
+                        <input type="url" id="projGithub" class="form-control" value="${p ? (p.github_repo_url || '') : ''}" placeholder="https://github.com/username/project" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Documentation / Architecture Link</label>
+                        <input type="url" id="projDocs" class="form-control" value="${p ? (p.documentation_url || '') : ''}" placeholder="https://docs.myproject.io">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold">Demo Video / Live Demo URL</label>
+                        <input type="url" id="projDemo" class="form-control" value="${p ? (p.demo_video_url || '') : ''}" placeholder="https://youtube.com/watch?v=demo">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold">Project Abstract & Architecture Overview *</label>
+                        <textarea id="projAbstract" class="form-control" rows="4" placeholder="Detail your solution, database schema rationale, implementation challenges, and societal impact..." required>${p ? (p.abstract || '') : ''}</textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <div class="small text-muted">
+                        <i class="bi bi-bell-fill text-warning me-1"></i> Trigger <code class="text-primary">trg_after_project_insert</code> will notify all team members.
+                    </div>
+                    <button type="submit" class="btn btn-primary-inno" id="saveProjBtn">
+                        <i class="bi bi-cloud-arrow-up me-1"></i> ${p ? 'Update Project Submission' : 'Submit Project for Evaluation'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    // Attach submit event listener to the dynamically rendered form
+    document.getElementById('projectSubmitForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveProjBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+        const payload = {
+            title: document.getElementById('projTitle').value.trim(),
+            abstract: document.getElementById('projAbstract').value.trim(),
+            tech_stack: document.getElementById('projTechStack').value.trim(),
+            github_repo_url: document.getElementById('projGithub').value.trim(),
+            documentation_url: document.getElementById('projDocs').value.trim(),
+            demo_video_url: document.getElementById('projDemo').value.trim()
+        };
+
+        const res = await apiFetch(`/api/teams/${teamId}/project`, {
+            method: 'POST',
+            body: payload
+        });
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Submit Project';
+
+        if (res && res.ok && res.data && res.data.success) {
+            showToast(res.data.message || 'Project submitted successfully!', 'success');
+            selectTeam(teamId);
+        } else {
+            showToast((res && res.data && res.data.message) || 'Submission failed.', 'danger');
+        }
+    });
+}
+
+// Global Create Team
+document.getElementById('globalCreateTeamForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('globalCreateTeamBtn');
+    btn.disabled = true;
+
+    const hackathon_id = document.getElementById('globalTeamHackathon').value;
+    const team_name = document.getElementById('globalTeamName').value.trim();
+
+    const res = await apiFetch('/api/teams/create', {
+        method: 'POST',
+        body: { hackathon_id: parseInt(hackathon_id), team_name }
+    });
+
+    btn.disabled = false;
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Team created!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('createTeamModalGlobal')).hide();
+        document.getElementById('globalCreateTeamForm').reset();
+        activeTeamId = res.data.team_id;
+        loadTeams();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to create team.', 'danger');
+    }
+});
+
+// Global Join Team
+document.getElementById('globalJoinTeamForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('globalJoinBtn');
+    btn.disabled = true;
+
+    const invitation_code = document.getElementById('globalJoinCode').value.trim();
+    const role_in_team = document.getElementById('globalJoinRole').value.trim();
+
+    const res = await apiFetch('/api/teams/join', {
+        method: 'POST',
+        body: { invitation_code, role_in_team }
+    });
+
+    btn.disabled = false;
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Joined team!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('joinTeamModalGlobal')).hide();
+        document.getElementById('globalJoinTeamForm').reset();
+        activeTeamId = res.data.team_id;
+        loadTeams();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to join team.', 'danger');
+    }
+});
+
+// Load Hackathons for Create Modal
+async function loadHackathonsForModal() {
+    const res = await apiFetch('/api/hackathons?status=Open');
+    const select = document.getElementById('globalTeamHackathon');
+    if (res && res.ok && res.data && res.data.success) {
+        select.innerHTML = '<option value="">-- Select Open Hackathon --</option>' +
+            res.data.hackathons.map(h => `<option value="${h.hackathon_id}">${h.title} (${h.hackathon_type})</option>`).join('');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadTeams();
+    loadHackathonsForModal();
+});
+</script>
+{% endblock %}
