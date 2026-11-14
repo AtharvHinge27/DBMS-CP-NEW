@@ -4,7 +4,7 @@
 **Student:** Atharv Hinge (Second Year Computer Engineering)  
 **Academic Year:** 2026 – 2027  
 **GitHub Repository:** [https://github.com/AtharvHinge27/DBMS-CP](https://github.com/AtharvHinge27/DBMS-CP)  
-**Inspired By:** AICTE ATAL (Training and Learning) Academy Portal  
+
 
 ---
 
@@ -49,7 +49,7 @@ test.bat
 
 ## 1. Project Vision & Architecture
 
-**InnoSphere** is a modern, light-themed institutional portal designed to manage students, multi-college participants, internal campus hackathons, external national opportunities (e.g. Smart India Hackathon, AICTE ATAL Challenges), teams, project submissions, and judge evaluations.
+**InnoSphere** is a modern, light-themed institutional portal designed to manage students, multi-college participants, internal campus hackathons, external national opportunities (e.g. Smart India Hackathon, National Challenges), teams, project submissions, and judge evaluations.
 
 The platform is architected for multi-institution scalability using a normalized **MySQL 8.0** relational database, a modular **Python Flask** backend, and a modern **HTML5/Bootstrap 5/Fetch API** frontend.
 
@@ -70,7 +70,7 @@ The platform is architected for multi-institution scalability using a normalized
 
 ### C. Internal & External Hackathon Management
 - **Internal Hackathons:** Created and governed by college administrators or coordinators with customizable eligibility, team sizes, and timelines.
-- **External Opportunities:** National competitions (SIH, AICTE ATAL) with direct external application URLs.
+- **External Opportunities:** National competitions (SIH, National Challenges) with direct external application URLs.
 - Real-time search filters by opportunity type (All, Internal, External) and status (Open, In Progress, Completed).
 
 ### D. Team Collaboration & Project Submission

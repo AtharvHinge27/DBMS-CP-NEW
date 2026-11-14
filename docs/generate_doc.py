@@ -105,7 +105,7 @@ def generate_documentation():
     r_title.font.size = Pt(30)
     r_title.font.color.rgb = navy
 
-    r_sub = p_title.add_run("Unified Innovation, Hackathon & Research Management Portal\n(Inspired by the AICTE ATAL Academy Portal)")
+    r_sub = p_title.add_run("Unified Innovation, Hackathon & Research Management Portal\n")
     r_sub.font.name = "Arial"
     r_sub.font.size = Pt(14)
     r_sub.font.color.rgb = gold
@@ -146,7 +146,7 @@ def generate_documentation():
     p.add_run(
         "InnoSphere is an enterprise-grade institutional innovation and hackathon management platform engineered from scratch "
         "to solve the widespread fragmentation of student project tracking, hackathon registrations, team formations, and judging workflows across higher education institutions. "
-        "Taking inspiration from the national AICTE ATAL (AICTE Training and Learning) Academy portal, InnoSphere provides a unified, multi-college multi-tenant architecture "
+        "InnoSphere provides a unified, multi-college multi-tenant architecture "
         "where administrators, college coordinators, student participants, mentors, and industry judges collaborate seamlessly."
     )
 
@@ -154,7 +154,7 @@ def generate_documentation():
     points = [
         ("Authentication & Role-Based Access Control (RBAC): ", "Dedicated operational portals for Admins, College Coordinators, Participants, Mentors, and Judges with secure password hashing."),
         ("Participant 360° Profile Management: ", "Detailed academic, technical skills, GitHub/LinkedIn repository links, and dynamic profile completion calculation via database functions."),
-        ("Internal & External Hackathon Management: ", "Support for both institutional campus hackathons and external national opportunities (SIH, AICTE ATAL) with deadlines and eligibility criteria."),
+        ("Internal & External Hackathon Management: ", "Support for both institutional campus hackathons and external national opportunities (SIH, National Challenges) with deadlines and eligibility criteria."),
         ("Team Collaboration & Project Registration: ", "Transactional team formation with auto-generated unique invitation codes, strict capacity enforcement, and project repository submissions."),
         ("Multi-Criteria Evaluation Rubric: ", "Structured 4-factor scoring (Innovation, Feasibility, Technical Execution, Presentation) feeding real-time SQL leaderboard views."),
         ("Attendance Tracking: ", "Verification and attendance check-in roster maintained per event to ensure certificate eligibility."),
@@ -173,7 +173,7 @@ def generate_documentation():
     doc.add_heading("Structured 6-Section Student Workspace Architecture:", level=2)
     p_stu = doc.add_paragraph()
     p_stu.add_run(
-        "To provide students with a modern, institutional experience inspired by national portals like AICTE ATAL, InnoSphere organizes participant features into a comprehensive, vertically-scrollable sidebar with 6 distinct sections:\n"
+        "To provide students with a modern, institutional experience InnoSphere organizes participant features into a comprehensive, vertically-scrollable sidebar with 6 distinct sections:\n"
         "1. CORE: Dashboard (/dashboard), Explore Hackathons (/hackathons), Leaderboard (/leaderboard), and Announcements (/announcements) for official circulars and deadlines.\n"
         "2. MY PROFILE: Personal Details, Academic Details, Technical Skills, and Edit Profile, computing dynamic completion via MySQL Stored Function fn_calculate_profile_completion.\n"
         "3. PARTICIPATION: My Applications (/applications), My Registrations (/applications?status=Approved), My Teams (/teams), Team Invitations (/teams?action=join), My Projects (/projects), and Project Submissions (/projects?action=submit).\n"
@@ -186,7 +186,7 @@ def generate_documentation():
     p_hack = doc.add_paragraph()
     p_hack.add_run(
         "InnoSphere catalogs 26 curated hackathon opportunities covering both internal campus competitions and premier national/governmental hackathons "
-        "(Smart India Hackathon, AICTE ATAL Hackathon, KAVACH Cybersecurity, RBI HarBinger, e-Yantra Robotics, Google Solution Challenge, Microsoft Imagine Cup, and Flipkart GRiD). "
+        "(Smart India Hackathon, National Hackathons, KAVACH Cybersecurity, RBI HarBinger, e-Yantra Robotics, Google Solution Challenge, Microsoft Imagine Cup, and Flipkart GRiD). "
         "The discovery interface provides multi-criteria real-time filtering by:\n"
         "• Technical Domain: AI/ML & GenAI, Web & Mobile, Cybersecurity, Robotics & IoT, Healthcare & FinTech, Sustainability & Smart Cities, Cloud/DevOps, Blockchain, and SpaceTech.\n"
         "• Opportunity Type: Internal (Campus-organized) vs External (National/Governmental).\n"

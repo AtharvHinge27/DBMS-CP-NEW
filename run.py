@@ -20,7 +20,7 @@ def print_banner():
  |___|_| |_|_| |_|\___/____/| .__/|_| |_|\___|_|  \___| 
                             |_|                          
   Unified Innovation, Hackathon & Research Management Portal
-  Institutional Portal Inspired by AICTE ATAL Academy
+  Institutional Innovation Portal
  ============================================================================
 """
     print(banner)

@@ -200,11 +200,11 @@ INSERT INTO hackathons (
 ),
 (
     4, NULL, 
-    'AICTE ATAL National DeepTech Challenge 2026', 
+    'National DeepTech Challenge 2026', 
     'Quantum & DeepTech', 
     'Flagship national competition encouraging student researchers to build proof-of-concepts in Quantum Computing, Cyber-Physical Systems, and Next-Gen Semiconductors.',
-    'External', 'Online', 'Virtual AICTE ATAL Portal', 
-    'AICTE ATAL Academy', 
+    'External', 'Online', 'Virtual National Portal', 
+    'National Innovation Academy', 
     'All AICTE approved institution students and faculty research groups.',
     'https://atalacademy.aicte-india.org', '2026-11-30', '2026-12-10', '2026-12-12', 
     1, 4, '₹75,000 + National Recognition', 'Open', 1
