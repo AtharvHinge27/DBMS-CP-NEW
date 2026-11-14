@@ -34,7 +34,7 @@ class TestInnoSphereRoutes(unittest.TestCase):
             sess['college_id'] = 1
             sess['college_name'] = 'Pune Institute of Computer Technology'
 
-        participant_urls = ['/dashboard', '/profile', '/teams', '/certificates']
+        participant_urls = ['/dashboard', '/profile', '/applications', '/teams', '/projects', '/certificates']
         for url in participant_urls:
             with self.subTest(url=url):
                 res = self.client.get(url)

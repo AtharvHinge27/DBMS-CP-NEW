@@ -20,6 +20,7 @@ def list_hackathons():
     """
     hackathon_type = request.args.get('type')
     status = request.args.get('status')
+    domain = request.args.get('domain', '').strip()
     search = request.args.get('search', '').strip()
 
     sql = """
@@ -45,10 +46,15 @@ def list_hackathons():
         sql += " AND h.status = %s"
         params.append(status)
 
+    if domain and domain != 'All':
+        sql += " AND (h.theme LIKE %s OR h.title LIKE %s)"
+        like_domain = f"%{domain}%"
+        params.extend([like_domain, like_domain])
+
     if search:
-        sql += " AND (h.title LIKE %s OR h.theme LIKE %s OR h.organizer_name LIKE %s)"
+        sql += " AND (h.title LIKE %s OR h.theme LIKE %s OR h.organizer_name LIKE %s OR h.description LIKE %s)"
         like_search = f"%{search}%"
-        params.extend([like_search, like_search, like_search])
+        params.extend([like_search, like_search, like_search, like_search])
 
     sql += " ORDER BY h.registration_deadline ASC;"
 
@@ -173,10 +179,14 @@ def register_for_hackathon():
         }), 409
 
     # Insert registration
+    status_val = data.get('status', 'Approved')
+    if status_val not in ['Applied', 'Approved', 'Waitlisted', 'Rejected']:
+        status_val = 'Approved'
+
     reg_id, _ = execute_dml("""
         INSERT INTO hackathon_registrations (hackathon_id, user_id, status)
-        VALUES (%s, %s, 'Approved');
-    """, (hackathon_id, user_id))
+        VALUES (%s, %s, %s);
+    """, (hackathon_id, user_id, status_val))
 
     # Send confirmation notification
     execute_dml("""

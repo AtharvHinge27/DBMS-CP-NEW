@@ -288,3 +288,48 @@ def submit_project(team_id):
             'message': 'Project submitted successfully!',
             'project_id': project_id
         }), 201
+
+
+@teams_bp.route('/my-projects', methods=['GET'])
+@login_required
+def get_my_projects():
+    """
+    Fetches all projects associated with teams the current user belongs to,
+    including submission links, progress, evaluation scores, and judge feedback.
+    """
+    user_id = session['user_id']
+    projects = query_all("""
+        SELECT 
+            p.project_id, p.team_id, p.hackathon_id, p.title AS project_title,
+            p.abstract, p.tech_stack, p.github_repo_url, p.documentation_url,
+            p.demo_video_url, p.submission_status, p.submitted_at,
+            t.team_name, t.invitation_code, t.leader_user_id,
+            u.full_name AS leader_name,
+            h.title AS hackathon_title, h.theme AS hackathon_theme,
+            h.status AS hackathon_status,
+            (CASE WHEN t.leader_user_id = %s THEN TRUE ELSE FALSE END) AS is_leader,
+            (SELECT COUNT(*) FROM evaluations e WHERE e.project_id = p.project_id) AS evaluation_count,
+            (SELECT ROUND(AVG(e.total_score), 2) FROM evaluations e WHERE e.project_id = p.project_id) AS avg_score
+        FROM projects p
+        JOIN teams t ON p.team_id = t.team_id
+        JOIN team_members tm ON t.team_id = tm.team_id
+        JOIN users u ON t.leader_user_id = u.user_id
+        JOIN hackathons h ON p.hackathon_id = h.hackathon_id
+        WHERE tm.user_id = %s
+        ORDER BY p.submitted_at DESC;
+    """, (user_id, user_id))
+
+    # Fetch individual evaluation rubrics for each project
+    for proj in projects:
+        evals = query_all("""
+            SELECT e.evaluation_id, e.total_score, e.innovation_score,
+                   e.feasibility_score, e.technical_score, e.presentation_score,
+                   e.feedback, e.evaluated_at, u.full_name AS judge_name
+            FROM evaluations e
+            JOIN users u ON e.judge_user_id = u.user_id
+            WHERE e.project_id = %s;
+        """, (proj['project_id'],))
+        proj['evaluations_list'] = evals
+
+    return jsonify({'success': True, 'projects': projects})
+

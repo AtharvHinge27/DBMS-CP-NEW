@@ -81,5 +81,60 @@ class TestInnoSphereAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertFalse(data['verified'])
 
+    def test_07_hackathons_domain_filter(self):
+        """Test filtering hackathons by technical domain."""
+        response = self.client.get('/api/hackathons?domain=Cybersecurity')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertGreaterEqual(len(data['hackathons']), 1)
+        for h in data['hackathons']:
+            self.assertTrue('cybersecurity' in (h.get('theme', '') + h.get('title', '')).lower())
+
+    def test_08_participant_applications(self):
+        """Test fetching participant's registered applications."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.get('/api/participants/applications')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertIsInstance(data['applications'], list)
+
+    def test_09_participant_projects(self):
+        """Test fetching participant's project submissions."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.get('/api/teams/my-projects')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertIsInstance(data['projects'], list)
+
+    def test_10_duplicate_hackathon_registration_prevention(self):
+        """Test that registering twice for the same hackathon is rejected with 409."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        # User 6 is already registered for Hackathon 1 in seed data
+        response = self.client.post('/api/hackathons/register', json={
+            'hackathon_id': 1
+        })
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 409)
+        self.assertFalse(data['success'])
+        self.assertIn('already registered', data['message'].lower())
+
 if __name__ == '__main__':
     unittest.main()

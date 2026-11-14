@@ -170,6 +170,30 @@ def generate_documentation():
     add_callout(doc, "Multi-Tenant Scalability",
         "The database is designed from the ground up for multi-college SaaS operation. Every institutional user, department, and event references college_id, allowing independent colleges to operate isolated hackathons while sharing a single unified national platform.")
 
+    doc.add_heading("Dedicated Student Workspace Modules:", level=2)
+    p_stu = doc.add_paragraph()
+    p_stu.add_run(
+        "To provide students with a modern, friction-free experience inspired by national portals, InnoSphere organizes participant features into five dedicated workspace modules:\n"
+        "1. My Profile (/profile): Captures student academic credentials, branch, semester, technical skills, and portfolio links. Computes real-time profile completion percentage via MySQL Stored Function fn_calculate_profile_completion.\n"
+        "2. My Applications (/applications): Centralized tracker for all registered hackathons, displaying application review status (Applied, Approved, Waitlisted, Rejected), host institutions, team affiliations, and withdrawal actions.\n"
+        "3. My Teams (/teams): Facilitates atomic team creation using MySQL Stored Procedure sp_create_team_with_leader, generating cryptographic 8-character invitation codes and enforcing team size boundary constraints.\n"
+        "4. My Projects (/projects): Complete project lifecycle hub for submitting abstract, tech stack tags, GitHub repositories, and demo videos, with integrated multi-rubric judge score breakdowns and feedback inspection.\n"
+        "5. Certificates & Achievements (/certificates): Displays earned credentials with instant downloadable PDF certificates (generated dynamically via ReportLab) and public cryptographic verification codes."
+    )
+
+    doc.add_heading("Expanded Multi-Domain Hackathon Discovery Engine:", level=2)
+    p_hack = doc.add_paragraph()
+    p_hack.add_run(
+        "InnoSphere catalogs 26 curated hackathon opportunities covering both internal campus competitions and premier national/governmental hackathons "
+        "(Smart India Hackathon, AICTE ATAL Hackathon, KAVACH Cybersecurity, RBI HarBinger, e-Yantra Robotics, Google Solution Challenge, Microsoft Imagine Cup, and Flipkart GRiD). "
+        "The discovery interface provides multi-criteria real-time filtering by:\n"
+        "• Technical Domain: AI/ML & GenAI, Web & Mobile, Cybersecurity, Robotics & IoT, Healthcare & FinTech, Sustainability & Smart Cities, Cloud/DevOps, Blockchain, and SpaceTech.\n"
+        "• Opportunity Type: Internal (Campus-organized) vs External (National/Governmental).\n"
+        "• Registration Status: Open for Registration, In Progress, and Completed.\n"
+        "• Search Keywords: Real-time full-text keyword matching across title, host, theme, and description.\n"
+        "• Integrity Safeguards: Prevents duplicate registrations at both frontend and database layers (HTTP 409 & unique constraints)."
+    )
+
     # -------------------------------------------------------------------------
     # Section 2: Technology Stack & Connectivity Flow
     # -------------------------------------------------------------------------

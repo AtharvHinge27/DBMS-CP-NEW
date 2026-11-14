@@ -94,6 +94,14 @@ def profile_page():
     return render_template('profile.html')
 
 
+@app.route('/applications')
+def applications_page():
+    """My Applications – Track hackathon applications and approval status."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('applications.html')
+
+
 @app.route('/hackathons')
 def hackathons_page():
     """Hackathon Discovery and Opportunity Hub."""
@@ -112,6 +120,14 @@ def teams_page():
     if 'user_id' not in session:
         return redirect(url_for('login_page'))
     return render_template('teams.html')
+
+
+@app.route('/projects')
+def projects_page():
+    """My Projects – Manage project details, submissions and progress."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('projects.html')
 
 
 @app.route('/evaluations')

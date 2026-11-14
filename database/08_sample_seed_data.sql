@@ -144,7 +144,7 @@ UPDATE participant_profiles SET
 WHERE user_id = 11;
 
 -- ----------------------------------------------------------------------------
--- 5. Seed Hackathons (Internal & External)
+-- 5. Seed Hackathons (Internal & External - 26 Realistic Opportunities)
 -- ----------------------------------------------------------------------------
 INSERT INTO hackathons (
     hackathon_id, college_id, title, theme, description, 
@@ -155,7 +155,7 @@ INSERT INTO hackathons (
 (
     1, 1, 
     'InnoHacks 2026 – AI & Web Innovation Sprint', 
-    'AI & Smart Campus Solutions', 
+    'AI/ML & Web Development', 
     'A 36-hour internal hackathon focused on developing practical, AI-augmented digital solutions for higher education institutions, smart campuses, and student productivity.',
     'Internal', 'Hybrid', 'PICT Innovation Centre & Virtual', 
     'PICT ACM Student Chapter & InnoSphere Council', 
@@ -166,19 +166,19 @@ INSERT INTO hackathons (
 (
     2, 1, 
     'Campus CleanTech & IoT Ideathon 2026', 
-    'Sustainability & Smart Energy', 
+    'Sustainability & CleanTech', 
     'Inter-departmental innovation hackathon to build IoT-driven energy monitors, water tracking dashboards, and eco-friendly waste management solutions for college campuses.',
     'Internal', 'Offline', 'Auditorium Hall B, PICT Campus', 
-    'Department of Computer Engineering', 
+    'Department of Computer Engineering & Green Club', 
     'First, Second, and Third Year engineering students.',
     NULL, '2026-12-01', '2026-12-05', '2026-12-06', 
     2, 4, '₹25,000 + Incubation Support', 'Open', 2
 ),
 (
     3, NULL, 
-    'Smart India Hackathon (SIH) 2026 - Hardware & Software', 
-    'National Digital Infrastructure', 
-    'Nationwide initiative to provide students with a platform to solve some of the pressing problems faced in our day-to-day lives across central ministries and state departments.',
+    'Smart India Hackathon (SIH) 2026 - Software & Hardware Edition', 
+    'Smart Cities & Governance', 
+    'Nationwide initiative to provide students with a platform to solve some of the pressing problems faced in our day-to-day lives across central ministries, state departments, and industries.',
     'External', 'Hybrid', 'Multiple Nodal Centers across India', 
     'Ministry of Education Innovation Cell & AICTE', 
     'Students pursuing engineering and technological degree programs across India.',
@@ -187,18 +187,260 @@ INSERT INTO hackathons (
 ),
 (
     4, NULL, 
-    'AICTE ATAL National Innovation Challenge', 
-    'Industry 4.0 & Deep Tech', 
-    'Flagship national competition encouraging students to build proof-of-concepts in Quantum Computing, Cyber-Physical Systems, and Sustainable Tech.',
+    'AICTE ATAL National DeepTech Challenge 2026', 
+    'Quantum & DeepTech', 
+    'Flagship national competition encouraging student researchers to build proof-of-concepts in Quantum Computing, Cyber-Physical Systems, and Next-Gen Semiconductors.',
     'External', 'Online', 'Virtual AICTE ATAL Portal', 
     'AICTE ATAL Academy', 
     'All AICTE approved institution students and faculty research groups.',
     'https://atalacademy.aicte-india.org', '2026-11-30', '2026-12-10', '2026-12-12', 
     1, 4, '₹75,000 + National Recognition', 'Open', 1
+),
+(
+    5, 2, 
+    'COEP MindSpark 2026 – National Technical CodeSprint', 
+    'Web & App Development', 
+    'Annual flagship inter-college hackathon hosted by COEP Technological University challenging participants to build scalable web apps, microservices, and reactive user interfaces.',
+    'Internal', 'Hybrid', 'COEP Main Auditorium, Pune', 
+    'COEP Technological University Tech Council', 
+    'Open to all engineering students across India.',
+    NULL, '2026-11-28', '2026-12-02', '2026-12-04', 
+    2, 4, '₹40,000 + Tech Trophies', 'Open', 2
+),
+(
+    6, 3, 
+    'VJTI Technovanza HackAI 2026', 
+    'AI/ML & Generative AI', 
+    'High-octane hackathon challenging engineers to deploy real-time computer vision, predictive neural nets, and multimodal assistive devices for urban public infrastructure.',
+    'Internal', 'Hybrid', 'VJTI Quadrangle & Virtual Labs, Mumbai', 
+    'VJTI Technovanza Technical Board', 
+    'Open to university student teams of 2 to 4 members.',
+    NULL, '2026-12-05', '2026-12-12', '2026-12-14', 
+    2, 4, '₹60,000 + Industry Mentorship', 'Open', 1
+),
+(
+    7, 1, 
+    'PICT Credenz 2026 – Generative AI & Autonomous Agent Sprint', 
+    'AI/ML & Generative AI', 
+    'Build next-gen autonomous LLM agents, retrieval-augmented generation (RAG) pipelines, and localized language models for regional Indian languages.',
+    'Internal', 'Online', 'PICT IEEE Virtual Labs', 
+    'PICT IEEE Student Branch', 
+    'Second, Third, and Final Year CS/IT/AI students.',
+    NULL, '2026-12-10', '2026-12-18', '2026-12-20', 
+    1, 3, '₹35,000 + Cloud Compute Credits', 'Open', 2
+),
+(
+    8, NULL, 
+    'KAVACH 2026 – National Cyber Security Hackathon', 
+    'Cybersecurity & Digital Defense', 
+    'Nationwide cybersecurity hackathon by Bureau of Police Research and Development (BPR&D) to identify innovative cybersecurity and digital forensics tools for law enforcement.',
+    'External', 'Hybrid', 'New Delhi Nodal Center & Online', 
+    'BPR&D, Ministry of Home Affairs & AICTE', 
+    'Undergraduate and Postgraduate students across Indian technical institutes.',
+    'https://kavach.mic.gov.in', '2026-12-20', '2027-01-05', '2027-01-07', 
+    3, 6, '₹1,00,000 per Problem Track', 'Open', 1
+),
+(
+    9, NULL, 
+    'RBI HarBinger 2026 – Innovation for Transformation (FinTech)', 
+    'FinTech & Blockchain', 
+    'Global hackathon by Reserve Bank of India on themes of frictionless payments, CBDC (Digital Rupee) interoperability, and AI fraud prevention in financial ecosystems.',
+    'External', 'Online', 'RBI Innovation Hub Virtual Portal', 
+    'Reserve Bank of India (RBI)', 
+    'Students, innovators, and start-up teams worldwide.',
+    'https://harbinger.rbi.org.in', '2026-12-22', '2027-01-15', '2027-01-17', 
+    2, 5, '₹40,00,000 Total Prize Pool', 'Open', 1
+),
+(
+    10, NULL, 
+    'e-Yantra Robotics & Embedded Systems Challenge 2026', 
+    'Robotics & Embedded IoT', 
+    'Premier robotics challenge hosted by IIT Bombay to design autonomous drones, ROS2 robotic navigation, and smart embedded sensor networks for precision agriculture.',
+    'External', 'Hybrid', 'IIT Bombay & Regional Centers', 
+    'IIT Bombay & Ministry of Education', 
+    'Enrolled undergraduate engineering students.',
+    'https://www.e-yantra.org', '2026-12-08', '2026-12-28', '2026-12-30', 
+    2, 4, '₹2,50,000 + Paid Research Fellowships', 'Open', 1
+),
+(
+    11, NULL, 
+    'Google Solution Challenge 2026 – UN 17 Global Goals', 
+    'Web & App Development', 
+    'Invites university students to develop solutions for one or more of the United Nations 17 Sustainable Development Goals using Google Cloud, Flutter, and Android.',
+    'External', 'Online', 'Google Developer Community Hub', 
+    'Google Developer Student Clubs (GDSC)', 
+    'Members of active GDSC chapters globally.',
+    'https://developers.google.com/community/gdsc-solution-challenge', '2027-01-15', '2027-02-01', '2027-02-03', 
+    1, 4, '$12,000 USD + Mentorship from Google Engineers', 'Open', 1
+),
+(
+    12, NULL, 
+    'Microsoft Imagine Cup 2026 – AI for Earth & Humanity', 
+    'AI/ML & Generative AI', 
+    'Global student technology competition providing an opportunity to build real-world AI and cloud applications on Microsoft Azure that solve critical societal challenges.',
+    'External', 'Online', 'Microsoft Student Hub', 
+    'Microsoft Global Student Programs', 
+    'Students aged 16+ enrolled in high school or higher education.',
+    'https://imaginecup.microsoft.com', '2027-01-20', '2027-02-10', '2027-02-12', 
+    1, 4, '$100,000 USD Grand Prize + Azure Grants', 'Open', 1
+),
+(
+    13, NULL, 
+    'Flipkart GRiD 7.0 – Autonomous Robotics & Vision Challenge', 
+    'Robotics & Embedded IoT', 
+    'Engineering campus challenge focusing on automated optical packet sorting, robotic picking arm kinematics, and edge computer vision in dynamic warehouse logistics.',
+    'External', 'Online', 'Unstop Assessment Portal', 
+    'Flipkart Engineering & Unstop', 
+    'B.Tech / B.E. students graduating in 2026, 2027, or 2028.',
+    'https://unstop.com/competitions/flipkart-grid-70', '2026-11-26', '2026-12-04', '2026-12-06', 
+    2, 3, '₹5,00,000 + Pre-Placement Interviews', 'Open', 1
+),
+(
+    14, 1, 
+    'MedTech Innovation Summit 2026 – Clinical AI Diagnostics', 
+    'Healthcare & Telemedicine', 
+    'Inter-disciplinary healthcare hackathon co-hosted with medical institutes to engineer AI diagnostics for radiology scans, ECG arrhythmia detectors, and ICU alerts.',
+    'Internal', 'Hybrid', 'PICT Innovation Centre & BJ Medical', 
+    'PICT Bio-Informatics Lab & Medical Board', 
+    'Open to student engineering and medical research teams.',
+    NULL, '2026-12-14', '2026-12-22', '2026-12-24', 
+    2, 4, '₹50,000 + Clinical Trial Incubation', 'Open', 2
+),
+(
+    15, NULL, 
+    'Tata Crucible Hackathon 2026 – Industrial IoT & Smart Factory', 
+    'Sustainability & CleanTech', 
+    'Campus hackathon from the Tata Group to design predictive equipment maintenance models, energy dissipation dashboards, and IoT automated factory floor monitoring.',
+    'External', 'Online', 'Tata Crucible Competition Hub', 
+    'Tata Sons & Tata Technologies', 
+    'Full-time engineering and management students in India.',
+    'https://www.tatacrucible.com', '2026-12-18', '2027-01-08', '2027-01-10', 
+    2, 4, '₹3,00,000 + Incubation Grants', 'Open', 1
+),
+(
+    16, NULL, 
+    'National Clean Water & River Conservation Hackathon', 
+    'Sustainability & CleanTech', 
+    'National technology challenge focused on low-cost IoT turbidity sensors, effluent discharge tracking, and hydrological flood forecasting models for river basins.',
+    'External', 'Hybrid', 'NMCG Headquarters, New Delhi', 
+    'National Mission for Clean Ganga & MoE', 
+    'Students of technical institutions and environmental research labs.',
+    'https://nmcg.nic.in', '2026-12-24', '2027-01-14', '2027-01-16', 
+    3, 5, '₹2,00,000 + Government Implementation', 'Open', 1
+),
+(
+    17, 1, 
+    'Pune Smart Mobility & EV Telematics Hackathon', 
+    'Smart Cities & Governance', 
+    'Build smart battery management systems (BMS), EV charging grid load balancers, and GPS commuter trip optimization apps in collaboration with municipal corporations.',
+    'Internal', 'Offline', 'PICT Campus Lab 4', 
+    'Department of Information Technology, PICT', 
+    'Undergraduate engineering students from Pune district.',
+    NULL, '2026-12-02', '2026-12-08', '2026-12-09', 
+    2, 4, '₹30,000 + Smart City Pilot Grant', 'Open', 2
+),
+(
+    18, 3, 
+    'CyberDefense BlueTeam CTF & Defensive Security Sprint', 
+    'Cybersecurity & Digital Defense', 
+    'Hands-on cyber defense event focusing on real-time intrusion detection system (IDS) tuning, memory buffer overflow patching, and SIEM security log analysis.',
+    'Internal', 'Online', 'VJTI Cyber Range Portal', 
+    'VJTI Center of Cyber Security', 
+    'Open to all enrolled students with knowledge of Linux and networking.',
+    NULL, '2026-12-12', '2026-12-19', '2026-12-20', 
+    1, 3, '₹40,000 + OffSec Training Vouchers', 'Open', 1
+),
+(
+    19, 2, 
+    'DefiPulse Web3 & Zero-Knowledge Identity Hackathon', 
+    'FinTech & Blockchain', 
+    'Design decentralized credential verification, zk-SNARK privacy mechanisms for student transcripts, and peer-to-peer micro-lending smart contracts on EVM.',
+    'Internal', 'Hybrid', 'COEP Blockchain Research Lab', 
+    'COEP Blockchain Research Group', 
+    'Students proficient in Solidity, Rust, and Web3 frameworks.',
+    NULL, '2026-12-15', '2026-12-26', '2026-12-28', 
+    2, 4, '₹50,000 + Grant Sponsorship', 'Open', 2
+),
+(
+    20, NULL, 
+    'AWS DeepRacer Autonomous Racing & Reinforcement Learning League', 
+    'AI/ML & Generative AI', 
+    'Train reinforcement learning agents, tune reward functions in simulation, and deploy optimal neural policy networks onto 1/18th scale robotic race cars.',
+    'External', 'Online', 'AWS DeepRacer Student Console', 
+    'Amazon Web Services (AWS)', 
+    'Active university students with an AWS Educate account.',
+    'https://aws.amazon.com/deepracer', '2026-12-05', '2026-12-15', '2026-12-17', 
+    1, 3, '$10,000 AWS Credits + Trophies', 'Open', 1
+),
+(
+    21, 2, 
+    'Smart Agriculture & AgriTech Drone Telemetry Ideathon', 
+    'Robotics & Embedded IoT', 
+    'Deploy drone multispectral imagery analysis, soil NPK telemetry sensors, and automated irrigation controllers to empower rural farming cooperatives.',
+    'Internal', 'Hybrid', 'COEP Agriculture Extension Center', 
+    'COEP Department of Agriculture Engineering', 
+    'Teams of 2 to 4 interdisciplinary engineering students.',
+    NULL, '2026-12-20', '2027-01-05', '2027-01-07', 
+    2, 4, '₹35,000 + Farmer Pilot Deployment', 'Open', 2
+),
+(
+    22, NULL, 
+    'OpenHealth EHR & Rural Telemedicine Hackathon', 
+    'Healthcare & Telemedicine', 
+    'Build patient health record synchronization tools compliant with Ayushman Bharat Digital Mission (ABDM) standards using FHIR protocols for primary health centers.',
+    'External', 'Online', 'Ayushman Bharat ABDM Sandbox', 
+    'National Health Authority (NHA) & Ayushman Bharat', 
+    'Indian university students and healthcare software developers.',
+    'https://abdm.gov.in', '2027-01-10', '2027-01-22', '2027-01-24', 
+    2, 5, '₹3,00,000 + ABDM Sandbox Integration', 'Open', 1
+),
+(
+    23, 1, 
+    'Quantum Computing Algorithms Sprint 2026', 
+    'Quantum & DeepTech', 
+    'Implement quantum optimization circuits (QAOA), Grover search simulations, and variational quantum eigensolvers for cryptography and chemical modeling using Qiskit.',
+    'Internal', 'Online', 'PICT HPC Quantum Simulator', 
+    'PICT High Performance Computing Center', 
+    'Students with strong foundations in linear algebra and Python.',
+    NULL, '2027-01-05', '2027-01-18', '2027-01-20', 
+    1, 3, '₹30,000 + Quantum Cloud Access', 'Open', 2
+),
+(
+    24, NULL, 
+    'GovTech Public Grievance AI Solver Sprint', 
+    'Smart Cities & Governance', 
+    'Build automated citizen grievance categorization, duplicate petition clustering, and sentiment analytics pipelines for state administrative portals.',
+    'External', 'Online', 'MyGov India Innovation Portal', 
+    'DARPG & MyGov India', 
+    'All Indian citizens enrolled in higher education institutes.',
+    'https://mygov.in', '2026-11-22', '2026-11-29', '2026-11-30', 
+    2, 4, '₹1,50,000 + National MyGov Showcase', 'Open', 1
+),
+(
+    25, 3, 
+    'GreenData Center & Carbon Neutral Computing Challenge', 
+    'Sustainability & CleanTech', 
+    'Develop scheduling algorithms for energy-aware Kubernetes clusters, dynamic CPU frequency governors, and PUE thermal optimization tools for academic data centers.',
+    'Internal', 'Offline', 'VJTI Green IT Facility', 
+    'VJTI Sustainable Computing Initiative', 
+    'Third and Final Year engineering students.',
+    NULL, '2026-10-15', '2026-10-22', '2026-10-24', 
+    2, 4, '₹25,000 + Merit Certificates', 'Completed', 1
+),
+(
+    26, NULL, 
+    'SpaceTech Satellite Data & Geospatial AI Hackathon', 
+    'Quantum & DeepTech', 
+    'Analyze multi-spectral satellite telemetry from Cartosat and Oceansat for deforestation mapping, urban sprawl monitoring, and drought forecasting using PyTorch & GeoPandas.',
+    'External', 'Online', 'ISRO MOSDAC Space Portal', 
+    'ISRO & IN-SPACe National Space Promotion', 
+    'Students in Aerospace, CS, IT, and Geoinformatics.',
+    'https://www.isro.gov.in', '2026-11-05', '2026-11-12', '2026-11-14', 
+    2, 4, '₹2,50,000 + ISRO Nodal Center Visit', 'In Progress', 1
 );
 
 -- ----------------------------------------------------------------------------
--- 6. Seed Hackathon Registrations
+-- 6. Seed Hackathon Registrations (Diverse status examples for tracking)
 -- ----------------------------------------------------------------------------
 INSERT INTO hackathon_registrations (hackathon_id, user_id, status) VALUES
 (1, 6, 'Approved'),
@@ -210,7 +452,25 @@ INSERT INTO hackathon_registrations (hackathon_id, user_id, status) VALUES
 (2, 6, 'Approved'),
 (2, 8, 'Approved'),
 (3, 6, 'Approved'),
-(3, 7, 'Approved');
+(3, 7, 'Approved'),
+(5, 6, 'Applied'),
+(7, 6, 'Approved'),
+(8, 6, 'Waitlisted'),
+(11, 6, 'Approved'),
+(14, 6, 'Rejected'),
+(20, 6, 'Applied');
+
+-- Seed Standard Criteria for All Hackathons (1 to 26)
+INSERT INTO evaluation_criteria (hackathon_id, criteria_name, max_score, weight_pct)
+SELECT h.hackathon_id, c.name, 25.00, 25.00
+FROM hackathons h
+CROSS JOIN (
+    SELECT 'Innovation & Originality' AS name
+    UNION ALL SELECT 'Feasibility & Practical Utility'
+    UNION ALL SELECT 'Technical Execution & DB Design'
+    UNION ALL SELECT 'UI/UX & Final Presentation'
+) c
+WHERE h.hackathon_id NOT IN (SELECT DISTINCT hackathon_id FROM evaluation_criteria);
 
 -- ----------------------------------------------------------------------------
 -- 7. Seed Teams

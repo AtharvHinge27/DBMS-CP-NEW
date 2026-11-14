@@ -70,9 +70,11 @@
                     </li>
                     <li><a class="dropdown-item py-2" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
                     {% if current_user.role == 'Participant' %}
-                    <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person-lines-fill me-2"></i> My Profile</a></li>
+                    <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person-badge me-2"></i> My Profile</a></li>
+                    <li><a class="dropdown-item py-2" href="/applications"><i class="bi bi-file-earmark-check me-2"></i> My Applications</a></li>
                     <li><a class="dropdown-item py-2" href="/teams"><i class="bi bi-people me-2"></i> My Teams</a></li>
-                    <li><a class="dropdown-item py-2" href="/certificates"><i class="bi bi-award me-2"></i> My Certificates</a></li>
+                    <li><a class="dropdown-item py-2" href="/projects"><i class="bi bi-folder-check me-2"></i> My Projects</a></li>
+                    <li><a class="dropdown-item py-2" href="/certificates"><i class="bi bi-award me-2"></i> Certificates & Achievements</a></li>
                     {% endif %}
                     {% if current_user.role in ['Admin', 'College Coordinator'] %}
                     <li><a class="dropdown-item py-2" href="/admin"><i class="bi bi-gear me-2"></i> Admin Control</a></li>
@@ -107,18 +109,26 @@
         </a>
 
         {% if current_user.role == 'Participant' %}
-        <div class="sidebar-header">Participant Zone</div>
+        <div class="sidebar-header">Student Workspace</div>
         <a href="/profile" class="nav-link {% if request.path == '/profile' %}active{% endif %}">
             <i class="bi bi-person-badge"></i>
             <span class="nav-text">My Profile</span>
         </a>
+        <a href="/applications" class="nav-link {% if request.path == '/applications' %}active{% endif %}">
+            <i class="bi bi-file-earmark-check"></i>
+            <span class="nav-text">My Applications</span>
+        </a>
         <a href="/teams" class="nav-link {% if request.path == '/teams' %}active{% endif %}">
             <i class="bi bi-people-fill"></i>
-            <span class="nav-text">Teams & Projects</span>
+            <span class="nav-text">My Teams</span>
+        </a>
+        <a href="/projects" class="nav-link {% if request.path == '/projects' %}active{% endif %}">
+            <i class="bi bi-folder-check"></i>
+            <span class="nav-text">My Projects</span>
         </a>
         <a href="/certificates" class="nav-link {% if request.path == '/certificates' %}active{% endif %}">
             <i class="bi bi-award-fill"></i>
-            <span class="nav-text">Certificates</span>
+            <span class="nav-text">Certificates & Achievements</span>
         </a>
         {% endif %}
 

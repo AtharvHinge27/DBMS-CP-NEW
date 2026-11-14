@@ -197,3 +197,69 @@ def get_participation_history():
         'teams': teams,
         'certificates': certificates
     })
+
+
+@participants_bp.route('/applications', methods=['GET'])
+@login_required
+def get_my_applications():
+    """
+    Fetches full list of hackathon applications and approval status for current user.
+    """
+    user_id = session['user_id']
+    status_filter = request.args.get('status')
+
+    sql = """
+        SELECT 
+            hr.registration_id, hr.status AS application_status, hr.registered_at,
+            h.hackathon_id, h.title AS hackathon_title, h.theme, h.hackathon_type,
+            h.mode, h.venue, h.registration_deadline, h.start_date, h.end_date,
+            h.prize_pool, h.status AS hackathon_status, h.external_url,
+            COALESCE(c.college_name, 'National / External Opportunity') AS host_college,
+            t.team_id, t.team_name, t.invitation_code, tm.role_in_team
+        FROM hackathon_registrations hr
+        JOIN hackathons h ON hr.hackathon_id = h.hackathon_id
+        LEFT JOIN colleges c ON h.college_id = c.college_id
+        LEFT JOIN team_members tm ON tm.user_id = hr.user_id
+        LEFT JOIN teams t ON tm.team_id = t.team_id AND t.hackathon_id = h.hackathon_id
+        WHERE hr.user_id = %s
+    """
+    params = [user_id]
+    if status_filter and status_filter != 'All':
+        sql += " AND hr.status = %s"
+        params.append(status_filter)
+
+    sql += " ORDER BY hr.registered_at DESC;"
+    applications = query_all(sql, params)
+
+    return jsonify({'success': True, 'applications': applications})
+
+
+@participants_bp.route('/applications/<int:reg_id>', methods=['DELETE'])
+@login_required
+def withdraw_application(reg_id):
+    """Allows participant to withdraw an application if no active team is formed."""
+    user_id = session['user_id']
+    reg = query_one("""
+        SELECT registration_id, hackathon_id 
+        FROM hackathon_registrations 
+        WHERE registration_id = %s AND user_id = %s;
+    """, (reg_id, user_id))
+
+    if not reg:
+        return jsonify({'success': False, 'message': 'Application not found or unauthorized.'}), 404
+
+    # Check if user has an active team in this hackathon
+    team = query_one("""
+        SELECT tm.team_member_id FROM team_members tm
+        JOIN teams t ON tm.team_id = t.team_id
+        WHERE t.hackathon_id = %s AND tm.user_id = %s;
+    """, (reg['hackathon_id'], user_id))
+    if team:
+        return jsonify({
+            'success': False, 
+            'message': 'Cannot withdraw application while you are a member of an active team. Please leave or disband the team first.'
+        }), 400
+
+    execute_dml("DELETE FROM hackathon_registrations WHERE registration_id = %s;", (reg_id,))
+    return jsonify({'success': True, 'message': 'Application withdrawn successfully.'})
+

@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header & Action Bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">My Applications & Registration Status</h1>
+            <div class="small text-muted">Track your applications across internal institutional hackathons and national challenges.</div>
+        </div>
+        <a href="/hackathons" class="btn btn-primary-inno btn-sm mt-2 mt-md-0">
+            <i class="bi bi-plus-circle me-1"></i> Explore New Hackathons
+        </a>
+    </div>
+
+    <!-- Quick Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Total Applied</span>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statTotalApps">0</div>
+                <div class="small text-muted mt-1">Total applications submitted</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Approved</span>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-success" id="statApprovedApps">0</div>
+                <div class="small text-muted mt-1">Eligible to form teams</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Under Review</span>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-info" id="statPendingApps">0</div>
+                <div class="small text-muted mt-1">Pending committee review</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Waitlisted / Other</span>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-exclamation-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-warning" id="statOtherApps">0</div>
+                <div class="small text-muted mt-1">Queue or closed status</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="appSearchInput" class="form-control border-start-0" placeholder="Search applications by hackathon name, theme, or host...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group w-100" role="group" id="appStatusFilterGroup">
+                    <button type="button" class="btn btn-sm btn-outline-inno active" data-status="All">All</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-status="Approved">Approved</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-status="Applied">Under Review</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-status="Waitlisted">Waitlisted</button>
+                    <button type="button" class="btn btn-sm btn-outline-inno" data-status="Rejected">Rejected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="content-card">
+        <div class="content-card-header">
+            <div>
+                <h5 class="content-card-title"><i class="bi bi-file-earmark-check text-primary"></i> Application Records</h5>
+                <div class="small text-muted">Complete audit trail of your hackathon applications and approval status.</div>
+            </div>
+            <span class="badge bg-light text-dark border" id="applicationsCountBadge">0 Applications</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="applicationsTable">
+                <thead>
+                    <tr>
+                        <th>Hackathon & Theme</th>
+                        <th>Type & Mode</th>
+                        <th>Host Institution</th>
+                        <th>Applied Date</th>
+                        <th>Approval Status</th>
+                        <th>Team Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading your applications...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let allApplications = [];
+let currentStatusFilter = 'All';
+
+async function loadApplications() {
+    const res = await apiFetch('/api/participants/applications');
+    const tbody = document.querySelector('#applicationsTable tbody');
+
+    if (res && res.ok && res.data && res.data.success) {
+        allApplications = res.data.applications || [];
+
+        // Update Stat Cards
+        document.getElementById('statTotalApps').textContent = allApplications.length;
+        document.getElementById('statApprovedApps').textContent = allApplications.filter(a => a.application_status === 'Approved').length;
+        document.getElementById('statPendingApps').textContent = allApplications.filter(a => a.application_status === 'Applied').length;
+        document.getElementById('statOtherApps').textContent = allApplications.filter(a => ['Waitlisted', 'Rejected'].includes(a.application_status)).length;
+
+        renderApplications();
+    } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Failed to load applications.</td></tr>';
+    }
+}
+
+function renderApplications() {
+    const tbody = document.querySelector('#applicationsTable tbody');
+    const search = document.getElementById('appSearchInput').value.trim().toLowerCase();
+
+    let filtered = allApplications;
+
+    if (currentStatusFilter !== 'All') {
+        filtered = filtered.filter(a => a.application_status === currentStatusFilter);
+    }
+
+    if (search) {
+        filtered = filtered.filter(a => 
+            (a.hackathon_title && a.hackathon_title.toLowerCase().includes(search)) ||
+            (a.theme && a.theme.toLowerCase().includes(search)) ||
+            (a.host_college && a.host_college.toLowerCase().includes(search))
+        );
+    }
+
+    document.getElementById('applicationsCountBadge').textContent = `${filtered.length} Applications`;
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-2 text-secondary d-block mb-2"></i>
+                    No matching applications found. <a href="/hackathons">Browse hackathons</a> to submit an application.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(a => {
+        let statusBadge = '';
+        if (a.application_status === 'Approved') {
+            statusBadge = '<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>';
+        } else if (a.application_status === 'Applied') {
+            statusBadge = '<span class="badge bg-primary"><i class="bi bi-hourglass-split me-1"></i> Under Review</span>';
+        } else if (a.application_status === 'Waitlisted') {
+            statusBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i> Waitlisted</span>';
+        } else {
+            statusBadge = '<span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i> Rejected</span>';
+        }
+
+        let teamBadge = '';
+        if (a.team_name) {
+            teamBadge = `
+                <div>
+                    <strong class="text-dark">${a.team_name}</strong>
+                    <div class="small text-muted">${a.role_in_team || 'Member'}</div>
+                </div>
+            `;
+        } else if (a.application_status === 'Approved') {
+            teamBadge = `
+                <a href="/hackathons/${a.hackathon_id}" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size: 0.78rem;">
+                    <i class="bi bi-plus-circle"></i> Form / Join Team
+                </a>
+            `;
+        } else {
+            teamBadge = '<span class="text-muted small">No Team (Pending Approval)</span>';
+        }
+
+        return `
+            <tr>
+                <td>
+                    <div class="fw-bold text-primary">${a.hackathon_title}</div>
+                    <div class="small text-muted"><i class="bi bi-tag me-1"></i>${a.theme}</div>
+                </td>
+                <td>
+                    <span class="badge ${a.hackathon_type === 'Internal' ? 'badge-internal' : 'badge-external'} me-1">${a.hackathon_type}</span>
+                    <span class="badge bg-light text-dark border">${a.mode}</span>
+                </td>
+                <td class="small text-secondary" style="max-width: 170px;">
+                    <div class="text-truncate">${a.host_college}</div>
+                </td>
+                <td class="small text-muted">
+                    ${a.registered_at ? a.registered_at.split(' ')[0] : '-'}
+                </td>
+                <td>
+                    ${statusBadge}
+                </td>
+                <td>
+                    ${teamBadge}
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <a href="/hackathons/${a.hackathon_id}" class="btn btn-sm btn-outline-inno py-1 px-2" title="View Hackathon Details">
+                            <i class="bi bi-eye"></i> Details
+                        </a>
+                        ${a.team_id ? `
+                            <a href="/teams" class="btn btn-sm btn-primary-inno py-1 px-2" title="Open Team Workspace">
+                                <i class="bi bi-people"></i> Team
+                            </a>
+                        ` : ''}
+                        ${!a.team_id && ['Applied', 'Waitlisted'].includes(a.application_status) ? `
+                            <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="withdrawApp(${a.registration_id})" title="Withdraw Application">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function withdrawApp(regId) {
+    if (!confirm('Are you sure you want to withdraw this hackathon application?')) return;
+
+    const res = await apiFetch(`/api/participants/applications/${regId}`, {
+        method: 'DELETE'
+    });
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Application withdrawn.', 'info');
+        loadApplications();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to withdraw application.', 'danger');
+    }
+}
+
+// Filter button toggle
+document.querySelectorAll('#appStatusFilterGroup button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#appStatusFilterGroup button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentStatusFilter = e.target.getAttribute('data-status');
+        renderApplications();
+    });
+});
+
+document.getElementById('appSearchInput').addEventListener('input', () => {
+    clearTimeout(window.appSearchDebounce);
+    window.appSearchDebounce = setTimeout(renderApplications, 200);
+});
+
+document.addEventListener('DOMContentLoaded', loadApplications);
+</script>
+{% endblock %}
