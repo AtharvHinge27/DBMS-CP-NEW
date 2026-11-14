@@ -3,7 +3,7 @@
 **Course:** Database Management Systems (DBMS) Capstone Project  
 **Student:** Atharv Hinge (Second Year Computer Engineering)  
 **Academic Year:** 2026 – 2027  
-**GitHub Repository:** [https://github.com/AtharvHinge27/DBMS-CP](https://github.com/AtharvHinge27/DBMS-CP)  
+**GitHub Repository:** [https://github.com/AtharvHinge27/DBMS-CP-NEW](https://github.com/AtharvHinge27/DBMS-CP-NEW)  
 
 
 ---
@@ -110,7 +110,245 @@ The platform is architected for multi-institution scalability using a normalized
 
 ---
 
-## 4. Technology Stack & Prerequisites
+## 4. Entity Relationship (ER) Diagram
+
+The InnoSphere database consists of **16 normalized tables** (3NF) spanning authentication, hackathon management, teams, projects, evaluations, certificates, and audit logging.
+
+```mermaid
+erDiagram
+    colleges {
+        int college_id PK
+        varchar college_code UK
+        varchar college_name
+        varchar city
+        varchar state
+        varchar website
+        boolean is_approved
+        datetime created_at
+    }
+
+    departments {
+        int department_id PK
+        int college_id FK
+        varchar department_code
+        varchar department_name
+        datetime created_at
+    }
+
+    users {
+        int user_id PK
+        int college_id FK
+        varchar full_name
+        varchar email UK
+        varchar password_hash
+        enum role
+        boolean is_active
+        datetime created_at
+    }
+
+    participant_profiles {
+        int profile_id PK
+        int user_id FK
+        varchar roll_number
+        int department_id FK
+        varchar branch
+        int year_of_study
+        int semester
+        varchar phone_number
+        text technical_skills
+        text interests
+        varchar github_url
+        varchar linkedin_url
+        int profile_completion_pct
+        datetime updated_at
+    }
+
+    hackathons {
+        int hackathon_id PK
+        int college_id FK
+        varchar title
+        varchar theme
+        text description
+        enum hackathon_type
+        enum mode
+        varchar organizer_name
+        text eligibility
+        varchar external_url
+        date registration_deadline
+        date start_date
+        date end_date
+        int min_team_size
+        int max_team_size
+        varchar prize_pool
+        enum status
+        int created_by FK
+        datetime created_at
+    }
+
+    hackathon_registrations {
+        int registration_id PK
+        int hackathon_id FK
+        int user_id FK
+        enum status
+        datetime registered_at
+    }
+
+    teams {
+        int team_id PK
+        int hackathon_id FK
+        varchar team_name
+        varchar invitation_code UK
+        int leader_user_id FK
+        datetime created_at
+    }
+
+    team_members {
+        int team_member_id PK
+        int team_id FK
+        int user_id FK
+        varchar role_in_team
+        datetime joined_at
+    }
+
+    projects {
+        int project_id PK
+        int team_id FK
+        int hackathon_id FK
+        varchar title
+        text abstract
+        varchar tech_stack
+        varchar github_repo_url
+        varchar documentation_url
+        varchar demo_video_url
+        enum submission_status
+        datetime submitted_at
+    }
+
+    judge_assignments {
+        int assignment_id PK
+        int hackathon_id FK
+        int judge_user_id FK
+        datetime assigned_at
+    }
+
+    evaluation_criteria {
+        int criteria_id PK
+        int hackathon_id FK
+        varchar criteria_name
+        decimal max_score
+        decimal weight_pct
+    }
+
+    evaluations {
+        int evaluation_id PK
+        int project_id FK
+        int judge_user_id FK
+        decimal innovation_score
+        decimal feasibility_score
+        decimal technical_score
+        decimal presentation_score
+        decimal total_score
+        text feedback
+        datetime evaluated_at
+    }
+
+    attendance {
+        int attendance_id PK
+        int hackathon_id FK
+        int user_id FK
+        datetime check_in_time
+        enum attendance_status
+        int marked_by FK
+    }
+
+    certificates {
+        int certificate_id PK
+        varchar certificate_code UK
+        int user_id FK
+        int hackathon_id FK
+        int team_id FK
+        enum certificate_type
+        date issue_date
+        int verified_count
+        datetime created_at
+    }
+
+    notifications {
+        int notification_id PK
+        int user_id FK
+        varchar title
+        text message
+        varchar link
+        boolean is_read
+        datetime created_at
+    }
+
+    audit_logs {
+        int log_id PK
+        int user_id FK
+        varchar action
+        varchar entity_type
+        int entity_id
+        text details
+        varchar ip_address
+        datetime created_at
+    }
+
+    %% ── Relationships ──────────────────────────────────────────────────
+    colleges           ||--o{ departments              : "has"
+    colleges           ||--o{ users                    : "belongs to"
+    colleges           ||--o{ hackathons               : "organizes"
+
+    users              ||--|| participant_profiles      : "has profile"
+    users              ||--o{ hackathon_registrations   : "applies to"
+    users              ||--o{ teams                     : "leads"
+    users              ||--o{ team_members              : "joins"
+    users              ||--o{ judge_assignments         : "assigned as judge"
+    users              ||--o{ evaluations               : "submits"
+    users              ||--o{ attendance                : "checked in"
+    users              ||--o{ certificates              : "receives"
+    users              ||--o{ notifications             : "receives"
+    users              ||--o{ audit_logs                : "generates"
+    users              ||--o{ hackathons                : "created by"
+
+    departments        ||--o{ participant_profiles      : "enrolled in"
+
+    hackathons         ||--o{ hackathon_registrations   : "has"
+    hackathons         ||--o{ teams                     : "contains"
+    hackathons         ||--o{ projects                  : "submitted to"
+    hackathons         ||--o{ judge_assignments         : "has"
+    hackathons         ||--o{ evaluation_criteria       : "defines"
+    hackathons         ||--o{ attendance                : "tracks"
+    hackathons         ||--o{ certificates              : "issues"
+
+    teams              ||--o{ team_members              : "has"
+    teams              ||--o| projects                  : "submits"
+    teams              ||--o{ certificates              : "awarded"
+
+    projects           ||--o{ evaluations               : "evaluated by"
+
+    attendance         }o--|| users                     : "marked by coordinator"
+```
+
+### Key Relationships Explained
+
+| Relationship | Type | Description |
+|---|---|---|
+| `colleges` → `departments` | 1 : Many | A college can have multiple departments |
+| `colleges` → `users` | 1 : Many | Users are tenant-scoped to a college |
+| `users` → `participant_profiles` | **1 : 1** | Every participant has exactly one profile; created automatically by trigger |
+| `hackathons` → `hackathon_registrations` | 1 : Many | A hackathon can have many individual applicants |
+| `hackathons` → `teams` | 1 : Many | Multiple teams compete in a hackathon |
+| `teams` ↔ `users` via `team_members` | **Many : Many** | Bridge table; a user can be in multiple teams across different hackathons |
+| `teams` → `projects` | **1 : 1** | Each team submits exactly one project per hackathon |
+| `projects` → `evaluations` | 1 : Many | A project is scored by multiple judges |
+| `hackathons` → `judge_assignments` | Many : Many | Multiple judges assigned to each hackathon |
+| `users` → `certificates` | 1 : Many | A user can earn certificates from multiple hackathons |
+| `users` → `audit_logs` | 1 : Many | Every sensitive action is logged per user |
+
+---
+
+## 5. Technology Stack & Prerequisites
 
 - **Frontend:** HTML5, CSS3, JavaScript (Fetch API), Bootstrap 5.3, Bootstrap Icons
 - **Backend:** Python 3.11+ / Flask 3.1
@@ -120,11 +358,11 @@ The platform is architected for multi-institution scalability using a normalized
 
 ---
 
-## 5. Installation & Setup Instructions
+## 6. Installation & Setup Instructions
 
 ### Step 1: Clone Repository & Navigate
 ```bash
-git clone https://github.com/AtharvHinge27/DBMS-CP.git
+git clone https://github.com/AtharvHinge27/DBMS-CP-NEW.git
 cd "d:\DBMS CP NEW"
 ```
 
@@ -139,9 +377,9 @@ Ensure `.env` contains your MySQL credentials:
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=atharv@27
+DB_PASSWORD=your_mysql_password_here
 DB_NAME=innosphere_db
-SECRET_KEY=innosphere_jwt_secret_key_college_dbms_2026
+SECRET_KEY=your_flask_secret_key_here
 FLASK_ENV=development
 PORT=5000
 ```
@@ -160,7 +398,7 @@ Open your browser and navigate to: **`http://localhost:5000`**
 
 ---
 
-## 6. Demo Accounts for Faculty & Viva Testing
+## 7. Demo Accounts for Faculty & Viva Testing
 
 You can use the one-click autofill buttons on the login page (`/login`) or enter these credentials:
 
@@ -175,7 +413,7 @@ You can use the one-click autofill buttons on the login page (`/login`) or enter
 
 ---
 
-## 7. Running Unit & Integration Tests
+## 8. Running Unit & Integration Tests
 
 The project includes unit and integration tests covering database triggers, procedures, views, API routes, and PDF downloads:
 
@@ -192,7 +430,7 @@ python tests/test_routes.py
 
 ---
 
-## 8. Academic Word Documentation
+## 9. Academic Word Documentation
 
 The complete academic viva guide and DBMS project documentation is generated at:
 `docs/InnoSphere_DBMS_Project_Documentation.docx`
