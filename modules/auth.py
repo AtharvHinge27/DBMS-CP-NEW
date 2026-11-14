@@ -163,6 +163,30 @@ def logout():
     return jsonify({'success': True, 'message': 'Logged out successfully.', 'redirect': '/login'})
 
 
+@auth_bp.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    """Changes password for the currently logged-in user."""
+    data = request.get_json() or {}
+    current_password = data.get('current_password', '')
+    new_password = data.get('new_password', '')
+
+    if not current_password or not new_password:
+        return jsonify({'success': False, 'message': 'Current and new password are required.'}), 400
+
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'New password must be at least 6 characters long.'}), 400
+
+    user_id = session['user_id']
+    user = query_one("SELECT password_hash FROM users WHERE user_id = %s;", (user_id,))
+    if not user or not check_password_hash(user['password_hash'], current_password):
+        return jsonify({'success': False, 'message': 'Current password is incorrect.'}), 400
+
+    new_hash = generate_password_hash(new_password)
+    execute_dml("UPDATE users SET password_hash = %s WHERE user_id = %s;", (new_hash, user_id))
+    return jsonify({'success': True, 'message': 'Password updated successfully!'})
+
+
 @auth_bp.route('/me', methods=['GET'])
 def get_current_user():
     """Returns the authenticated user's profile and notifications count."""

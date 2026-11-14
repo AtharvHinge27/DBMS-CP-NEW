@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}My Results & Performance – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">My Results & Performance Scorecards</h1>
+            <div class="small text-muted">Review your official evaluation scores, team rankings, judge feedback, and earned credentials.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <a href="/leaderboard" class="btn btn-outline-inno btn-sm">
+                <i class="bi bi-bar-chart-steps me-1"></i> View Live Leaderboard
+            </a>
+            <a href="/certificates" class="btn btn-primary-inno btn-sm">
+                <i class="bi bi-award me-1"></i> My Certificates
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Competitions Entered</span>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statEntered">0</div>
+                <div class="small text-muted mt-1">Hackathons participated</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Average Score</span>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-warning" id="statAvg">0.00</div>
+                <div class="small text-muted mt-1">Out of 100.00 total</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Best Rank</span>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-success" id="statBestRank">#1</div>
+                <div class="small text-muted mt-1">InnoHacks 2026 Winner</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Credentials Issued</span>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-info" id="statCerts">0</div>
+                <div class="small text-muted mt-1">Cryptographically verified</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table Card -->
+    <div class="content-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-primary mb-0"><i class="bi bi-clipboard2-data me-2"></i>Performance History Roster</h5>
+            <span class="badge bg-light text-dark border" id="resultsCountBadge">Loading results...</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Hackathon Event</th>
+                        <th>Team Name</th>
+                        <th>Project Submission</th>
+                        <th>Evaluation Score</th>
+                        <th>Status / Award</th>
+                        <th>Certificate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <div class="spinner-border text-primary spinner-border-sm me-2"></div> Fetching evaluation scorecards...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+async function loadResults() {
+    const res = await apiFetch('/api/participants/results');
+    const tbody = document.querySelector('#resultsTable tbody');
+    const badge = document.getElementById('resultsCountBadge');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const results = res.data.results;
+        badge.textContent = `${results.length} Competitions Recorded`;
+
+        document.getElementById('statEntered').textContent = results.length;
+        const scored = results.filter(r => parseFloat(r.final_score) > 0);
+        if (scored.length > 0) {
+            const avg = scored.reduce((sum, r) => sum + parseFloat(r.final_score), 0) / scored.length;
+            document.getElementById('statAvg').textContent = avg.toFixed(2);
+        }
+        const certsCount = results.filter(r => r.certificate_code).length;
+        document.getElementById('statCerts').textContent = certsCount;
+
+        if (results.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-2 text-secondary d-block mb-2"></i>
+                        No hackathon results recorded yet. Join a team and submit a project to get evaluated.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = results.map(r => `
+            <tr>
+                <td>
+                    <div class="fw-bold text-dark">${r.hackathon_title}</div>
+                    <span class="badge bg-light text-secondary border mt-1">${r.theme}</span>
+                </td>
+                <td>
+                    <span class="fw-bold text-primary">${r.team_name}</span>
+                </td>
+                <td>
+                    ${r.project_title ? `<div class="fw-semibold text-dark">${r.project_title}</div><small class="text-muted">${r.submission_status || 'Submitted'}</small>` : '<span class="text-muted small">No Submission</span>'}
+                </td>
+                <td>
+                    ${parseFloat(r.final_score) > 0 ? `
+                        <div class="fw-bold fs-6 text-success">${r.final_score} / 100</div>
+                        <small class="text-muted">${r.total_reviews} Judge Review(s)</small>
+                    ` : '<span class="badge bg-secondary">Pending Evaluation</span>'}
+                </td>
+                <td>
+                    ${r.certificate_type ? `
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success">${r.certificate_type}</span>
+                    ` : `
+                        <span class="badge bg-light text-dark border">${r.hackathon_status}</span>
+                    `}
+                </td>
+                <td>
+                    ${r.certificate_code ? `
+                        <a href="/api/certificates/download/${r.certificate_code}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-download me-1"></i> ${r.certificate_code}
+                        </a>
+                    ` : '<span class="text-muted small">Not Issued</span>'}
+                </td>
+                <td>
+                    <a href="/projects" class="btn btn-sm btn-outline-inno" title="View Rubric Breakdown">
+                        <i class="bi bi-eye"></i> Details
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load performance results.</td></tr>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadResults);
+</script>
+{% endblock %}

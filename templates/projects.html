@@ -308,6 +308,31 @@ document.getElementById('editProjectForm').addEventListener('submit', async (e) 
     }
 });
 
-document.addEventListener('DOMContentLoaded', loadProjects);
+document.addEventListener('DOMContentLoaded', () => {
+    loadProjects().then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const actionParam = urlParams.get('action');
+        const tabParam = urlParams.get('tab');
+        const hash = window.location.hash;
+
+        setTimeout(() => {
+            if (actionParam === 'submit' || hash === '#submit') {
+                const editBtn = document.querySelector('button[onclick*="openEditModal"]');
+                if (editBtn) {
+                    editBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    editBtn.classList.add('btn-lg');
+                } else {
+                    const cont = document.getElementById('projectsListContainer');
+                    if (cont) cont.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (tabParam === 'evaluations' || hash === '#evaluations') {
+                const evalSections = document.querySelectorAll('.card-body');
+                if (evalSections.length > 0) {
+                    evalSections[evalSections.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 400);
+    });
+});
 </script>
 {% endblock %}

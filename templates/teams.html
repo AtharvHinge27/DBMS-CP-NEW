@@ -372,6 +372,18 @@ async function loadHackathonsForModal() {
 document.addEventListener('DOMContentLoaded', () => {
     loadTeams();
     loadHackathonsForModal();
+
+    // Deep link from sidebar navigation
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'join' || window.location.hash === '#invitations') {
+        setTimeout(() => {
+            const joinModalEl = document.getElementById('joinTeamModalGlobal');
+            if (joinModalEl) {
+                const modal = new bootstrap.Modal(joinModalEl);
+                modal.show();
+            }
+        }, 300);
+    }
 });
 </script>
 {% endblock %}

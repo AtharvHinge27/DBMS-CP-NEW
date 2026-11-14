@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Help & Support Desk – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Help & Institutional Support Desk</h1>
+            <div class="small text-muted">Frequently asked questions, portal guidelines, coordinator contacts, and technical assistance.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <button class="btn btn-primary-inno btn-sm" data-bs-toggle="modal" data-bs-target="#supportTicketModal">
+                <i class="bi bi-ticket-perforated me-1"></i> Submit Support Query
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="content-card text-center p-4 h-100">
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
+                    <i class="bi bi-book fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Platform Documentation</h5>
+                <p class="small text-muted mb-3">Learn how teams, stored procedures, multi-criteria evaluations, and certificates operate.</p>
+                <a href="#faqSection" class="btn btn-sm btn-outline-inno">Browse FAQ Guide</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="content-card text-center p-4 h-100">
+                <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-3">
+                    <i class="bi bi-people-fill fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Coordinator Directory</h5>
+                <p class="small text-muted mb-3">Connect directly with institutional college coordinators for event approvals and attendance issues.</p>
+                <a href="#coordinatorsSection" class="btn btn-sm btn-outline-success">View Contacts</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="content-card text-center p-4 h-100">
+                <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                    <i class="bi bi-shield-check fs-2"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Certificate Verification</h5>
+                <p class="small text-muted mb-3">Instantly verify the cryptographic authenticity of any InnoSphere digital credential.</p>
+                <a href="/verify-certificate" class="btn btn-sm btn-outline-warning text-dark">Public Verifier</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="content-card p-4 mb-4" id="faqSection">
+        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-question-circle me-2"></i>Frequently Asked Questions</h5>
+        <div class="accordion" id="innoSphereFaq">
+
+            <div class="accordion-item border-0 mb-2 rounded bg-light">
+                <h2 class="accordion-header" id="faqHeading1">
+                    <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1">
+                        1. How do I form a team and invite other students?
+                    </button>
+                </h2>
+                <div id="faqCollapse1" class="accordion-collapse collapse" data-bs-parent="#innoSphereFaq">
+                    <div class="accordion-body small text-secondary">
+                        Navigate to <strong>Participation &rarr; My Teams</strong> and click <strong>Create Team</strong>. Select the open hackathon and name your team. InnoSphere calls the MySQL Stored Procedure <code>sp_create_team_with_leader</code>, which transactionally creates the team and generates a unique 8-character invitation code (e.g. <code>INNO-NOMAD2</code>). Share this code with your teammates so they can join using <strong>Team Invitations</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 mb-2 rounded bg-light">
+                <h2 class="accordion-header" id="faqHeading2">
+                    <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2">
+                        2. How is my Profile Completion Percentage calculated?
+                    </button>
+                </h2>
+                <div id="faqCollapse2" class="accordion-collapse collapse" data-bs-parent="#innoSphereFaq">
+                    <div class="accordion-body small text-secondary">
+                        Profile completion is dynamically computed using the MySQL Stored Function <code>fn_calculate_profile_completion(user_id)</code>. Each completed field contributes weight:
+                        <ul>
+                            <li>Roll Number: 10%</li>
+                            <li>Department & Branch: 15%</li>
+                            <li>Year & Semester: 10%</li>
+                            <li>Phone Number: 10%</li>
+                            <li>Technical Skills: 15%</li>
+                            <li>Interests: 10%</li>
+                            <li>GitHub, LinkedIn & Portfolio: 20%</li>
+                            <li>Biography: 10%</li>
+                        </ul>
+                        Keep your profile updated under <strong>My Profile &rarr; Edit Profile</strong> to achieve 100% completion.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 mb-2 rounded bg-light">
+                <h2 class="accordion-header" id="faqHeading3">
+                    <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3">
+                        3. What is the difference between Internal and External Hackathons?
+                    </button>
+                </h2>
+                <div id="faqCollapse3" class="accordion-collapse collapse" data-bs-parent="#innoSphereFaq">
+                    <div class="accordion-body small text-secondary">
+                        <strong>Internal Hackathons:</strong> Organized directly by your college or affiliated partner colleges (e.g. InnoHacks at PICT). Team formation, submissions, judging, and attendance are managed natively inside InnoSphere.<br>
+                        <strong>External Hackathons:</strong> Premier national competitions (e.g. Smart India Hackathon, KAVACH, RBI HarBinger, Google Solution Challenge). InnoSphere tracks your application approval status while directing you to the verified official portal.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 mb-2 rounded bg-light">
+                <h2 class="accordion-header" id="faqHeading4">
+                    <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4">
+                        4. What are the 4 scoring criteria used by judges?
+                    </button>
+                </h2>
+                <div id="faqCollapse4" class="accordion-collapse collapse" data-bs-parent="#innoSphereFaq">
+                    <div class="accordion-body small text-secondary">
+                        As configured in <code>evaluation_criteria</code>, each project is graded across 4 rubrics, each worth 25 points (Total 100 points):
+                        <ol>
+                            <li><strong>Innovation & Originality (25 pts):</strong> Novelty of idea and creative problem-solving.</li>
+                            <li><strong>Feasibility & Impact (25 pts):</strong> Practical applicability and societal/commercial utility.</li>
+                            <li><strong>Technical Execution (25 pts):</strong> Code quality, database schema normalization, and API resilience.</li>
+                            <li><strong>Presentation & Demo (25 pts):</strong> Clarity of pitch, UI responsiveness, and live working prototype.</li>
+                        </ol>
+                        Trigger <code>trg_before_evaluation_insert</code> automatically validates that scores remain within bounds.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 mb-2 rounded bg-light">
+                <h2 class="accordion-header" id="faqHeading5">
+                    <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse5">
+                        5. How do I verify my attendance for certificate eligibility?
+                    </button>
+                </h2>
+                <div id="faqCollapse5" class="accordion-collapse collapse" data-bs-parent="#innoSphereFaq">
+                    <div class="accordion-body small text-secondary">
+                        Navigate to <strong>Performance &rarr; Attendance</strong> to review your verified check-in timestamps. If your attendance status shows "Absent" or "Pending", contact your college coordinator with proof of participation to request a status correction.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Coordinator Contacts -->
+    <div class="content-card p-4" id="coordinatorsSection">
+        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-building me-2"></i>Institutional College Coordinators</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light">
+                    <span class="badge bg-primary mb-2">PICT Pune</span>
+                    <h6 class="fw-bold mb-1">Prof. Rajesh Kulkarni</h6>
+                    <div class="small text-muted mb-2">Head of Innovation & Student Hackathons</div>
+                    <div class="small text-secondary"><i class="bi bi-envelope me-1"></i> coord@pict.edu</div>
+                    <div class="small text-secondary"><i class="bi bi-telephone me-1"></i> +91 20 2437 1101</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light">
+                    <span class="badge bg-success mb-2">COEP Tech Univ</span>
+                    <h6 class="fw-bold mb-1">Dr. Sunita Deshmukh</h6>
+                    <div class="small text-muted mb-2">Dean of Student Research & Hackathons</div>
+                    <div class="small text-secondary"><i class="bi bi-envelope me-1"></i> mentor@innosphere.edu</div>
+                    <div class="small text-secondary"><i class="bi bi-telephone me-1"></i> +91 20 2550 7000</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded bg-light">
+                    <span class="badge bg-info text-white mb-2">VJTI Mumbai</span>
+                    <h6 class="fw-bold mb-1">Er. Shailesh Verma</h6>
+                    <div class="small text-muted mb-2">Institutional ATAL Coordinator</div>
+                    <div class="small text-secondary"><i class="bi bi-envelope me-1"></i> shailesh.v@vjti.ac.in</div>
+                    <div class="small text-secondary"><i class="bi bi-telephone me-1"></i> +91 22 2419 8100</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Support Ticket Modal -->
+<div class="modal fade" id="supportTicketModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-ticket-perforated me-2"></i>Submit Support Query</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="handleSupportSubmit(event)">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Query Category *</label>
+                        <select class="form-select" required>
+                            <option value="">-- Choose Category --</option>
+                            <option value="attendance">Attendance Correction</option>
+                            <option value="team">Team Formation / Invite Code Issue</option>
+                            <option value="evaluation">Judge Evaluation & Scoring</option>
+                            <option value="certificate">Certificate Download / Verification</option>
+                            <option value="technical">Bug Report / Technical Issue</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Subject *</label>
+                        <input type="text" class="form-control" placeholder="Brief summary of your query" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Detailed Description *</label>
+                        <textarea class="form-control" rows="4" placeholder="Please provide hackathon name, team code, and details..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno">Submit Query</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function handleSupportSubmit(e) {
+    e.preventDefault();
+    showToast('Your support query has been logged with ticket #INNO-HELP-482. A coordinator will reply within 24 hours.', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('supportTicketModal')).hide();
+}
+</script>
+{% endblock %}

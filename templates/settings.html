@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings & Security – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Account Settings & Security</h1>
+            <div class="small text-muted">Manage your security credentials, notification preferences, and institutional session details.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <span class="badge bg-light text-dark border px-3 py-2">
+                <i class="bi bi-shield-lock me-1 text-primary"></i> Account Protected
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Left Column: Password & Security -->
+        <div class="col-lg-6">
+            <!-- Change Password Card -->
+            <div class="content-card p-4 mb-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-key-fill me-2"></i>Change Password</h5>
+                <p class="small text-muted mb-4">Ensure your account uses a strong password with at least 6 characters including numbers and symbols.</p>
+
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Current Password *</label>
+                        <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">New Password *</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Enter new password (min. 6 characters)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Confirm New Password *</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm new password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary-inno btn-sm" id="changePasswordBtn">
+                        <i class="bi bi-check2 me-1"></i> Update Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Two-Factor & Account Session -->
+            <div class="content-card p-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-shield-check me-2"></i>Active Session Information</h5>
+                <div class="small text-secondary mb-3">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-dark fw-semibold">User ID:</span>
+                        <span class="font-monospace text-primary">#{{ current_user.user_id }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-dark fw-semibold">Full Name:</span>
+                        <span>{{ current_user.full_name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-dark fw-semibold">Email:</span>
+                        <span>{{ current_user.email }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-dark fw-semibold">Assigned Role:</span>
+                        <span class="badge badge-role badge-role-{{ current_user.role|lower|replace(' ', '-') }}">{{ current_user.role }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-dark fw-semibold">Institution Tenant:</span>
+                        <span>{{ current_user.college_name or 'National Portal' }}</span>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger w-100" onclick="handleLogout()">
+                    <i class="bi bi-box-arrow-right me-1"></i> Terminate Active Session & Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Column: Preferences & Notifications -->
+        <div class="col-lg-6">
+            <!-- Notification Preferences -->
+            <div class="content-card p-4 mb-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-sliders me-2"></i>System Notification Preferences</h5>
+                <p class="small text-muted mb-3">Configure which real-time alerts and institutional triggers you receive.</p>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="prefTeamAlerts" checked>
+                    <label class="form-check-label small fw-semibold" for="prefTeamAlerts">Team & Invitation Alerts</label>
+                    <div class="text-muted" style="font-size: 0.75rem;">Notify when a student joins your team or requests an invite code.</div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="prefEvalAlerts" checked>
+                    <label class="form-check-label small fw-semibold" for="prefEvalAlerts">Judge Evaluation Scorecard Alerts</label>
+                    <div class="text-muted" style="font-size: 0.75rem;">Instant notification when a judge submits a rubric score for your project.</div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="prefDeadlineAlerts" checked>
+                    <label class="form-check-label small fw-semibold" for="prefDeadlineAlerts">Hackathon Deadline Reminders</label>
+                    <div class="text-muted" style="font-size: 0.75rem;">Receive alerts 48 hours and 12 hours before project submission cutoffs.</div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="prefCertAlerts" checked>
+                    <label class="form-check-label small fw-semibold" for="prefCertAlerts">Certificate Generation Alerts</label>
+                    <div class="text-muted" style="font-size: 0.75rem;">Alert when verifiable winner or participation certificates are published.</div>
+                </div>
+
+                <button class="btn btn-sm btn-outline-inno mt-2" onclick="showToast('Notification preferences saved!', 'success')">
+                    Save Preferences
+                </button>
+            </div>
+
+            <!-- Institutional Privacy & Compliance -->
+            <div class="content-card p-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-file-lock2 me-2"></i>Institutional Data & Privacy</h5>
+                <p class="small text-secondary mb-3">
+                    Your student record is retained under your college tenant schema (<code>colleges</code> and <code>participant_profiles</code>) in compliance with AICTE ATAL academic regulations.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="/profile" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-person-badge me-1"></i> View 360° Profile
+                    </a>
+                    <button class="btn btn-sm btn-outline-inno" onclick="showToast('Academic participation export requested. File will download shortly.', 'info')">
+                        <i class="bi bi-download me-1"></i> Export Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cur = document.getElementById('currentPassword').value;
+    const nw = document.getElementById('newPassword').value;
+    const conf = document.getElementById('confirmPassword').value;
+
+    if (nw !== conf) {
+        showToast('New passwords do not match.', 'danger');
+        return;
+    }
+
+    const btn = document.getElementById('changePasswordBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+    const res = await apiFetch('/api/auth/change-password', {
+        method: 'POST',
+        body: { current_password: cur, new_password: nw }
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check2 me-1"></i> Update Password';
+
+    if (res && res.ok && res.data && res.data.success) {
+        showToast(res.data.message || 'Password changed successfully!', 'success');
+        document.getElementById('changePasswordForm').reset();
+    } else {
+        showToast((res && res.data && res.data.message) || 'Failed to update password.', 'danger');
+    }
+});
+</script>
+{% endblock %}

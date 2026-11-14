@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements & Bulletins – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Institutional Bulletins & Announcements</h1>
+            <div class="small text-muted">Official circulars, hackathon phase schedules, deadline extensions, and AICTE ATAL notices.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <span class="badge bg-primary px-3 py-2 d-flex align-items-center gap-1">
+                <i class="bi bi-broadcast"></i> Live Bulletin Board
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Total Notices</span>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val">8</div>
+                <div class="small text-muted mt-1">Published this semester</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Deadlines Approaching</span>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-warning">3</div>
+                <div class="small text-muted mt-1">Within next 10 days</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">National Circulars</span>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-file-earmark-ruled"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-info">4</div>
+                <div class="small text-muted mt-1">AICTE, MoE & RBI</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Institutional Directives</span>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-success">Verified</div>
+                <div class="small text-muted mt-1">Signed by Academic Council</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="content-card mb-4 p-3">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="announcementSearch" class="form-control border-start-0" placeholder="Search notices, keywords, or hackathons...">
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-md-end gap-1 flex-wrap" id="announcementCategoryFilters">
+                <button class="btn btn-sm btn-outline-inno active" data-category="All">All Bulletins</button>
+                <button class="btn btn-sm btn-outline-inno" data-category="Deadlines">Deadlines</button>
+                <button class="btn btn-sm btn-outline-inno" data-category="Hackathons">Hackathons</button>
+                <button class="btn btn-sm btn-outline-inno" data-category="Circulars">Circulars</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Feed Cards -->
+    <div class="row g-3" id="announcementsContainer">
+        <!-- Card 1 -->
+        <div class="col-12 announcement-item" data-category="Hackathons">
+            <div class="content-card p-4 border-start border-4 border-primary">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <span class="badge bg-primary me-2">Hackathon Roster</span>
+                        <span class="badge bg-light text-dark border">PICT Pune</span>
+                        <h5 class="fw-bold text-dark mt-2 mb-1">InnoHacks 2026: Grand Finale Presentation Schedule Released</h5>
+                    </div>
+                    <span class="small text-muted"><i class="bi bi-calendar3 me-1"></i> Nov 12, 2026</span>
+                </div>
+                <p class="text-secondary small mb-3">
+                    The institutional technical committee has published the time slots for Round 2 code reviews and jury demonstrations for InnoHacks 2026. All shortlisted team leaders must ensure their GitHub repositories and demo video URLs are submitted under <strong>My Projects</strong> before November 20, 2026.
+                </p>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="small text-muted"><i class="bi bi-person-circle me-1"></i> Released by: Prof. Rajesh Kulkarni (PICT Coordinator)</span>
+                    <a href="/projects" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right me-1"></i> Go to My Projects</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-12 announcement-item" data-category="Deadlines">
+            <div class="content-card p-4 border-start border-4 border-warning">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <span class="badge bg-warning text-dark me-2">Urgent Deadline</span>
+                        <span class="badge bg-light text-dark border">National</span>
+                        <h5 class="fw-bold text-dark mt-2 mb-1">Smart India Hackathon (SIH) 2026: College Pre-Screening Closes Nov 28</h5>
+                    </div>
+                    <span class="small text-muted"><i class="bi bi-calendar3 me-1"></i> Nov 10, 2026</span>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Internal college nomination rounds for Smart India Hackathon 2026 are underway. Teams selected through InnoSphere's preliminary evaluation will receive official college endorsement letters for the AICTE SIH central portal upload.
+                </p>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="small text-muted"><i class="bi bi-building me-1"></i> Ministry of Education Innovation Cell</span>
+                    <a href="/hackathons" class="btn btn-sm btn-outline-warning text-dark"><i class="bi bi-box-arrow-up-right me-1"></i> View SIH Details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-12 announcement-item" data-category="Circulars">
+            <div class="content-card p-4 border-start border-4 border-info">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <span class="badge bg-info text-white me-2">Institutional Circular</span>
+                        <span class="badge bg-light text-dark border">All Colleges</span>
+                        <h5 class="fw-bold text-dark mt-2 mb-1">Mandatory Attendance & Certificate Verification Policy</h5>
+                    </div>
+                    <span class="small text-muted"><i class="bi bi-calendar3 me-1"></i> Nov 05, 2026</span>
+                </div>
+                <p class="text-secondary small mb-3">
+                    As per AICTE ATAL guidelines, digital participation and winner certificates will only be issued to candidates who maintain a minimum 80% physical/virtual attendance during the hackathon sprint. Attendance check-ins can be verified in real time under the <strong>Attendance</strong> workspace.
+                </p>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="small text-muted"><i class="bi bi-shield-check me-1"></i> InnoSphere Academic Oversight Council</span>
+                    <a href="/attendance" class="btn btn-sm btn-outline-info"><i class="bi bi-check-circle me-1"></i> Check Attendance Status</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="col-12 announcement-item" data-category="Hackathons">
+            <div class="content-card p-4 border-start border-4 border-success">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <span class="badge bg-success me-2">National Opportunity</span>
+                        <span class="badge bg-light text-dark border">Cybersecurity</span>
+                        <h5 class="fw-bold text-dark mt-2 mb-1">KAVACH 2026 Cybersecurity Challenge: Problem Statements Released</h5>
+                    </div>
+                    <span class="small text-muted"><i class="bi bi-calendar3 me-1"></i> Oct 28, 2026</span>
+                </div>
+                <p class="text-secondary small mb-3">
+                    The Bureau of Police Research and Development (BPR&D) in association with AICTE has unveiled 20 high-priority problem statements for KAVACH 2026, ranging from deepfake detection to blockchain-based evidence collection.
+                </p>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="small text-muted"><i class="bi bi-shield-lock me-1"></i> BPR&D & AICTE Cell</span>
+                    <a href="https://kavach.mic.gov.in" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success"><i class="bi bi-box-arrow-up-right me-1"></i> Official Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('announcementSearch');
+    const filterButtons = document.querySelectorAll('#announcementCategoryFilters button');
+    const items = document.querySelectorAll('.announcement-item');
+
+    function applyFilter() {
+        const query = searchInput.value.toLowerCase().trim();
+        const activeBtn = document.querySelector('#announcementCategoryFilters button.active');
+        const category = activeBtn ? activeBtn.getAttribute('data-category') : 'All';
+
+        items.forEach(item => {
+            const itemCat = item.getAttribute('data-category');
+            const text = item.textContent.toLowerCase();
+            const matchesCat = (category === 'All' || itemCat === category);
+            const matchesSearch = (!query || text.includes(query));
+
+            if (matchesCat && matchesSearch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            applyFilter();
+        });
+    });
+
+    searchInput.addEventListener('input', applyFilter);
+});
+</script>
+{% endblock %}

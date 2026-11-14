@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block title %}Learning & Guidance Hub – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Learning & Mentorship Hub</h1>
+            <div class="small text-muted">Connect with experienced academic guides, attend technical masterclasses, and leverage curated hackathon resources.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <button class="btn btn-primary-inno btn-sm" data-bs-toggle="modal" data-bs-target="#requestMentorshipModal">
+                <i class="bi bi-chat-heart me-1"></i> Request Mentorship Session
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="learningHubTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if not active_tab or active_tab == 'mentorship' %}active{% endif %} fw-bold small" id="mentorship-tab" data-bs-toggle="tab" data-bs-target="#mentorshipPane" type="button" role="tab">
+                <i class="bi bi-person-video3 me-1"></i> Mentorship Program
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'mentors' %}active{% endif %} fw-bold small" id="mentors-tab" data-bs-toggle="tab" data-bs-target="#mentorsPane" type="button" role="tab">
+                <i class="bi bi-search-heart me-1"></i> Find Mentors
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'workshops' %}active{% endif %} fw-bold small" id="workshops-tab" data-bs-toggle="tab" data-bs-target="#workshopsPane" type="button" role="tab">
+                <i class="bi bi-easel me-1"></i> Workshops & Events
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'resources' %}active{% endif %} fw-bold small" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resourcesPane" type="button" role="tab">
+                <i class="bi bi-journal-code me-1"></i> Learning Resources
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="learningHubTabContent">
+
+        <!-- Tab 1: Mentorship Overview -->
+        <div class="tab-pane fade {% if not active_tab or active_tab == 'mentorship' %}show active{% endif %}" id="mentorshipPane" role="tabpanel">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="content-card text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
+                            <i class="bi bi-compass fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Architecture Guidance</h5>
+                        <p class="small text-muted mb-0">Get 1-on-1 feedback on your database schema, 3NF normalization, and backend API routes before final submission.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="content-card text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-3">
+                            <i class="bi bi-award fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Pitch Deck & Demo Prep</h5>
+                        <p class="small text-muted mb-0">Jury mentors help rehearse your 3-minute hackathon pitch and refine technical presentations.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="content-card text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                            <i class="bi bi-lightning-charge fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Live Office Hours</h5>
+                        <p class="small text-muted mb-0">Join weekly virtual office hours with senior professors and industry technical experts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card p-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-diagram-3 me-2"></i>How the InnoSphere Mentorship Workflow Operates</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 h-100 bg-light">
+                            <span class="badge bg-primary mb-2">Step 1</span>
+                            <h6 class="fw-bold mb-1">Select Domain</h6>
+                            <p class="small text-muted mb-0">Browse mentors specializing in AI/ML, Cybersecurity, Cloud, or Full Stack.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 h-100 bg-light">
+                            <span class="badge bg-primary mb-2">Step 2</span>
+                            <h6 class="fw-bold mb-1">Submit Abstract</h6>
+                            <p class="small text-muted mb-0">Attach your project GitHub repository and list specific technical roadblocks.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 h-100 bg-light">
+                            <span class="badge bg-primary mb-2">Step 3</span>
+                            <h6 class="fw-bold mb-1">Code & Schema Review</h6>
+                            <p class="small text-muted mb-0">Mentor reviews your ER diagram, SQL indexes, and Flask endpoints.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3 h-100 bg-light">
+                            <span class="badge bg-success mb-2">Step 4</span>
+                            <h6 class="fw-bold mb-1">Jury Readiness</h6>
+                            <p class="small text-muted mb-0">Obtain mentor sign-off and boost your project evaluation score.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Find Mentors -->
+        <div class="tab-pane fade {% if active_tab == 'mentors' %}show active{% endif %}" id="mentorsPane" role="tabpanel">
+            <div class="content-card mb-4 p-3">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" id="mentorSearchInput" class="form-control border-start-0" placeholder="Search by mentor name, expertise, or institution...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end text-muted small" id="mentorCountBadge">
+                        Loading mentors...
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4" id="mentorsGrid">
+                <div class="col-12 text-center py-5 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm me-2"></div> Fetching registered academic mentors...
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Workshops & Events -->
+        <div class="tab-pane fade {% if active_tab == 'workshops' %}show active{% endif %}" id="workshopsPane" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="content-card p-4 h-100 border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-primary">Upcoming Bootcamp</span>
+                            <span class="badge bg-light text-dark border">Virtual</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">MySQL 8 Indexing & Query Optimization Masterclass</h5>
+                        <p class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Nov 22, 2026 • 04:00 PM - 06:00 PM IST</p>
+                        <p class="small text-secondary mb-3">
+                            Learn how to design B-Tree composite indexes, analyze EXPLAIN execution plans, optimize complex multi-table JOINs, and implement stored procedures with transaction rollbacks.
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="small fw-semibold text-muted">Instructor: Dr. Anand Sharma</span>
+                            <button class="btn btn-sm btn-primary-inno" onclick="showToast('Registered for MySQL Optimization Masterclass!', 'success')">
+                                <i class="bi bi-check2-circle me-1"></i> Register Free
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="content-card p-4 h-100 border-start border-4 border-success">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-success">National FDP</span>
+                            <span class="badge bg-light text-dark border">Hybrid</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">AICTE ATAL Masterclass: Full-Stack Web Development & APIs</h5>
+                        <p class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Nov 25, 2026 • 10:00 AM - 01:00 PM IST</p>
+                        <p class="small text-secondary mb-3">
+                            A deep dive into REST API design with Python Flask, secure password hashing, JSON serialization, and responsive UI integration using Bootstrap 5 and JavaScript Fetch API.
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="small fw-semibold text-muted">Instructor: Prof. Rajesh Kulkarni</span>
+                            <button class="btn btn-sm btn-success" onclick="showToast('Registered for Full-Stack Masterclass!', 'success')">
+                                <i class="bi bi-check2-circle me-1"></i> Register Free
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="content-card p-4 h-100 border-start border-4 border-warning">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-warning text-dark">Hands-on Lab</span>
+                            <span class="badge bg-light text-dark border">Virtual</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Git, GitHub & Team Collaboration in 36-Hour Hackathons</h5>
+                        <p class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Nov 29, 2026 • 05:00 PM - 07:00 PM IST</p>
+                        <p class="small text-secondary mb-3">
+                            Master branch protection, pull request reviews, resolve git merge conflicts under time pressure, and structure your open-source repository documentation for jury evaluation.
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="small fw-semibold text-muted">Instructor: Er. Vikram Patil</span>
+                            <button class="btn btn-sm btn-outline-warning text-dark" onclick="showToast('Registered for Git & GitHub Workshop!', 'success')">
+                                <i class="bi bi-check2-circle me-1"></i> Register Free
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="content-card p-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-info text-white">AI / ML Workshop</span>
+                            <span class="badge bg-light text-dark border">Virtual</span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Deploying Lightweight Generative AI Models on the Edge</h5>
+                        <p class="small text-muted mb-3"><i class="bi bi-clock me-1"></i> Dec 04, 2026 • 03:00 PM - 05:30 PM IST</p>
+                        <p class="small text-secondary mb-3">
+                            Step-by-step guidance on quantizing LLMs, running on-device NLP inference, and hooking machine learning models to Flask backend endpoints for civic hackathons.
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="small fw-semibold text-muted">Instructor: Dr. Sunita Deshmukh</span>
+                            <button class="btn btn-sm btn-outline-info" onclick="showToast('Registered for Generative AI Workshop!', 'success')">
+                                <i class="bi bi-check2-circle me-1"></i> Register Free
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Learning Resources -->
+        <div class="tab-pane fade {% if active_tab == 'resources' %}show active{% endif %}" id="resourcesPane" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="content-card text-center p-4 h-100">
+                        <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
+                            <i class="bi bi-file-earmark-code fs-2"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">InnoSphere Starter Kit</h6>
+                        <p class="small text-muted mb-3">Production-ready template with Python Flask, MySQL Connector pool, and Bootstrap 5 responsive UI.</p>
+                        <a href="https://github.com/AtharvHinge27/DBMS-CP" target="_blank" class="btn btn-sm btn-outline-inno w-100">
+                            <i class="bi bi-github me-1"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="content-card text-center p-4 h-100">
+                        <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-3">
+                            <i class="bi bi-file-earmark-pdf fs-2"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">DBMS Viva Reference</h6>
+                        <p class="small text-muted mb-3">Comprehensive study guide covering 1NF-3NF, ACID, Stored Procedures, Functions, Triggers & B-Trees.</p>
+                        <a href="/static/docs/InnoSphere_DBMS_Project_Documentation.docx" download class="btn btn-sm btn-outline-success w-100">
+                            <i class="bi bi-download me-1"></i> Download Word Doc
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="content-card text-center p-4 h-100">
+                        <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                            <i class="bi bi-file-earmark-slides fs-2"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Hackathon Pitch Deck</h6>
+                        <p class="small text-muted mb-3">Standard 10-slide institutional template covering Problem, Architecture, Tech Stack, and Live Demo.</p>
+                        <button class="btn btn-sm btn-outline-warning text-dark w-100" onclick="showToast('Pitch Deck Template downloaded!', 'info')">
+                            <i class="bi bi-file-earmark-ppt me-1"></i> Download Template
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="content-card text-center p-4 h-100">
+                        <div class="d-inline-flex p-3 rounded-circle bg-info bg-opacity-10 text-info mb-3">
+                            <i class="bi bi-card-checklist fs-2"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">AICTE ATAL Compendium</h6>
+                        <p class="small text-muted mb-3">Official problem statement repository across Agriculture, HealthTech, Smart Mobility & Clean Water.</p>
+                        <a href="/hackathons" class="btn btn-sm btn-outline-info w-100">
+                            <i class="bi bi-compass me-1"></i> Explore Problem Sets
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Request Mentorship Modal -->
+<div class="modal fade" id="requestMentorshipModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-chat-heart me-2"></i>Request Mentor Guidance</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="mentorshipRequestForm" onsubmit="handleMentorshipSubmit(event)">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Select Mentor *</label>
+                        <select class="form-select" id="mentorSelectDropdown" required>
+                            <option value="">Loading mentors...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Target Hackathon / Project *</label>
+                        <input type="text" class="form-control" placeholder="e.g. InnoHacks 2026 – EduPulse" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Topic / Technical Roadblock *</label>
+                        <textarea class="form-control" rows="3" placeholder="Briefly describe what you would like the mentor to review (e.g. database schema, API latency, presentation deck)..." required></textarea>
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-info-circle me-1"></i> Your request will be queued to the mentor and coordinator.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-inno">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let mentorsList = [];
+
+async function loadMentors() {
+    const res = await apiFetch('/api/participants/mentors');
+    const grid = document.getElementById('mentorsGrid');
+    const countBadge = document.getElementById('mentorCountBadge');
+    const select = document.getElementById('mentorSelectDropdown');
+
+    if (res && res.ok && res.data && res.data.success) {
+        mentorsList = res.data.mentors;
+        countBadge.textContent = `${mentorsList.length} Verified Mentors Available`;
+
+        // Populate dropdown
+        select.innerHTML = '<option value="">-- Choose a Faculty or Industry Mentor --</option>' +
+            mentorsList.map(m => `<option value="${m.user_id}">${m.full_name} (${m.college_name})</option>`).join('');
+
+        renderMentors(mentorsList);
+    } else {
+        grid.innerHTML = '<div class="col-12 text-center text-muted py-4">Unable to load mentors.</div>';
+    }
+}
+
+function renderMentors(list) {
+    const grid = document.getElementById('mentorsGrid');
+    if (!list || list.length === 0) {
+        grid.innerHTML = '<div class="col-12 text-center text-muted py-4">No matching mentors found.</div>';
+        return;
+    }
+
+    grid.innerHTML = list.map(m => `
+        <div class="col-md-6 col-lg-6">
+            <div class="content-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-person-badge-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0">${m.full_name}</h5>
+                            <div class="small text-muted">${m.college_name} • ${m.city}</div>
+                            <span class="badge bg-success bg-opacity-10 text-success mt-1">Verified Guide</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="small fw-bold text-primary d-block mb-1">Domain Expertise:</span>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${m.expertise.split(',').map(tag => `<span class="badge bg-light text-dark border">${tag.trim()}</span>`).join('')}
+                        </div>
+                    </div>
+                    <p class="small text-secondary mb-3">${m.bio}</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <span class="small text-muted"><i class="bi bi-envelope me-1"></i>${m.email}</span>
+                    <button class="btn btn-sm btn-outline-inno" onclick="openRequestForMentor(${m.user_id})">
+                        <i class="bi bi-chat-dots me-1"></i> Request Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openRequestForMentor(mentorId) {
+    const select = document.getElementById('mentorSelectDropdown');
+    select.value = mentorId;
+    const modal = new bootstrap.Modal(document.getElementById('requestMentorshipModal'));
+    modal.show();
+}
+
+function handleMentorshipSubmit(e) {
+    e.preventDefault();
+    showToast('Mentorship guidance session requested successfully! Your mentor will confirm the slot.', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('requestMentorshipModal')).hide();
+}
+
+document.getElementById('mentorSearchInput')?.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const filtered = mentorsList.filter(m => 
+        m.full_name.toLowerCase().includes(q) ||
+        m.expertise.toLowerCase().includes(q) ||
+        m.college_name.toLowerCase().includes(q)
+    );
+    renderMentors(filtered);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadMentors();
+
+    // Check URL tab parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (tab) {
+        const triggerEl = document.querySelector(`#learningHubTabs button[data-bs-target="#${tab}Pane"]`);
+        if (triggerEl) {
+            const tabObj = new bootstrap.Tab(triggerEl);
+            tabObj.show();
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -263,3 +263,49 @@ def withdraw_application(reg_id):
     execute_dml("DELETE FROM hackathon_registrations WHERE registration_id = %s;", (reg_id,))
     return jsonify({'success': True, 'message': 'Application withdrawn successfully.'})
 
+
+@participants_bp.route('/mentors', methods=['GET'])
+@login_required
+def get_available_mentors():
+    """Fetches list of registered faculty guides and mentors."""
+    mentors = query_all("""
+        SELECT u.user_id, u.full_name, u.email, u.role,
+               COALESCE(c.college_name, 'Affiliated Institution Expert') AS college_name,
+               COALESCE(c.city, 'Pune') AS city,
+               COALESCE(pp.technical_skills, 'AI/ML, Web Systems, Cloud, Database Architecture') AS expertise,
+               COALESCE(pp.bio, 'Experienced academician and hackathon jury mentor.') AS bio
+        FROM users u
+        LEFT JOIN colleges c ON u.college_id = c.college_id
+        LEFT JOIN participant_profiles pp ON u.user_id = pp.user_id
+        WHERE u.role = 'Mentor' AND u.is_active = TRUE
+        ORDER BY u.full_name ASC;
+    """)
+    return jsonify({'success': True, 'mentors': mentors})
+
+
+@participants_bp.route('/results', methods=['GET'])
+@login_required
+def get_participant_results():
+    """Fetches performance scores, ranks, and certificates for the logged-in student."""
+    user_id = session['user_id']
+    results = query_all("""
+        SELECT 
+            p.project_id, p.title AS project_title, p.abstract, p.submission_status,
+            t.team_id, t.team_name,
+            h.hackathon_id, h.title AS hackathon_title, h.theme, h.status AS hackathon_status,
+            COALESCE(ROUND(AVG(e.total_score), 2), 0) AS final_score,
+            COUNT(e.evaluation_id) AS total_reviews,
+            cert.certificate_code, cert.certificate_type, cert.issue_date
+        FROM team_members tm
+        JOIN teams t ON tm.team_id = t.team_id
+        JOIN hackathons h ON t.hackathon_id = h.hackathon_id
+        LEFT JOIN projects p ON t.team_id = p.team_id
+        LEFT JOIN evaluations e ON p.project_id = e.project_id
+        LEFT JOIN certificates cert ON cert.hackathon_id = h.hackathon_id AND cert.user_id = %s
+        WHERE tm.user_id = %s
+        GROUP BY p.project_id, t.team_id, h.hackathon_id, cert.certificate_id
+        ORDER BY h.start_date DESC;
+    """, (user_id, user_id))
+    return jsonify({'success': True, 'results': results})
+
+

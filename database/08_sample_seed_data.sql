@@ -23,7 +23,9 @@ INSERT INTO departments (department_id, college_id, department_code, department_
 (3, 1, 'AIDS', 'Artificial Intelligence & Data Science'),
 (4, 1, 'ENTC', 'Electronics & Telecommunication'),
 (5, 2, 'CSE', 'Computer Science & Engineering'),
-(6, 2, 'IT', 'Information Technology');
+(6, 2, 'IT', 'Information Technology'),
+(7, 3, 'COMP', 'Computer Engineering'),
+(8, 3, 'IT', 'Information Technology');
 
 -- ----------------------------------------------------------------------------
 -- 3. Seed Users
@@ -39,6 +41,9 @@ INSERT INTO users (user_id, college_id, full_name, email, password_hash, role) V
 (1, 1, 'System Administrator', 'admin@innosphere.edu', 'scrypt:32768:8:1$WpTHcpUb2IuCa7MU$0c68ac7c268651aff493592be9997550b61a3e9af4f7cb064be3650c737de7315ae38d3932fe57772d0cc594dd7f889c8d3f80a9b3d24039ef25dd3a1e97ae37', 'Admin'),
 (2, 1, 'Prof. Rajesh Kulkarni', 'coord@pict.edu', 'scrypt:32768:8:1$z9a4oLAT28ssZIyB$62cf0698f92c882c7730d11efe92a33880c6e102f9382c302b93bf27307b8498a6c6dcce9de7c98ddee3760de4a0bd01637b7755fc86ce0567917f6b69ed7218', 'College Coordinator'),
 (3, 1, 'Dr. Sunita Deshmukh', 'mentor@innosphere.edu', 'scrypt:32768:8:1$UOpOvqUkZRBMV2pD$4b69b7a06aa860f45447e6f4f5a6170deb625b573818c9ee60b1ce119b50603ca75c219a5a7fcb4a01936f5984a92bd2d2fa4b2025fb2af18b34151f5739d766', 'Mentor'),
+(12, 1, 'Prof. Arvind Sen', 'arvind.sen@pict.edu', 'scrypt:32768:8:1$UOpOvqUkZRBMV2pD$4b69b7a06aa860f45447e6f4f5a6170deb625b573818c9ee60b1ce119b50603ca75c219a5a7fcb4a01936f5984a92bd2d2fa4b2025fb2af18b34151f5739d766', 'Mentor'),
+(13, 2, 'Dr. Meera Kulkarni', 'meera.k@coep.ac.in', 'scrypt:32768:8:1$UOpOvqUkZRBMV2pD$4b69b7a06aa860f45447e6f4f5a6170deb625b573818c9ee60b1ce119b50603ca75c219a5a7fcb4a01936f5984a92bd2d2fa4b2025fb2af18b34151f5739d766', 'Mentor'),
+(14, 3, 'Er. Shailesh Verma', 'shailesh.v@vjti.ac.in', 'scrypt:32768:8:1$UOpOvqUkZRBMV2pD$4b69b7a06aa860f45447e6f4f5a6170deb625b573818c9ee60b1ce119b50603ca75c219a5a7fcb4a01936f5984a92bd2d2fa4b2025fb2af18b34151f5739d766', 'Mentor'),
 (4, 2, 'Dr. Anand Sharma', 'judge.sharma@innosphere.edu', 'scrypt:32768:8:1$TBwyZ8ES8RcQIa2Q$6f68828f73cd984444b99778455f99bb77758425128547c1ac88c9524c1f202c5da3fe5bd669ebc0bce58001ab5b8132c4357814790b9016970b2b586725bca0', 'Judge'),
 (5, 1, 'Er. Vikram Patil', 'judge.patil@innosphere.edu', 'scrypt:32768:8:1$TBwyZ8ES8RcQIa2Q$6f68828f73cd984444b99778455f99bb77758425128547c1ac88c9524c1f202c5da3fe5bd669ebc0bce58001ab5b8132c4357814790b9016970b2b586725bca0', 'Judge'),
 -- Participants
@@ -142,6 +147,14 @@ UPDATE participant_profiles SET
     bio = 'Passionate about human-centered design and accessible frontend development.',
     profile_completion_pct = 75
 WHERE user_id = 11;
+
+-- Seed Profile Details for Mentors
+INSERT INTO participant_profiles (user_id, department_id, branch, technical_skills, interests, bio, profile_completion_pct) VALUES
+(3, 1, 'Computer Engineering', 'AI/ML, NLP, Deep Learning, Generative AI, PyTorch', 'Artificial Intelligence, Medical Imaging, AI Ethics', 'Professor and Senior Researcher with 15+ years experience guiding national hackathon teams.', 100),
+(12, 1, 'Information Technology', 'Cybersecurity, Network Defense, Penetration Testing, Cryptography', 'Zero Trust Architecture, Threat Intelligence, IoT Security', 'Faculty lead for Cyber Security Club, Certified Ethical Hacker (CEH) and industry consultant.', 100),
+(13, 5, 'Computer Science & Engineering', 'Cloud Systems, AWS, Kubernetes, Distributed Systems, Microservices', 'Cloud Architecture, Scalable Backends, DevOps', 'Associate Professor specializing in large-scale cloud native systems and database design.', 100),
+(14, 8, 'Computer Engineering', 'Full Stack Web, Node.js, Flask, System Architecture, MySQL, React', 'High-Performance APIs, Distributed Databases, Clean Architecture', 'Industry mentor and full-stack software architect helping teams build production-grade MVPs.', 100);
+
 
 -- ----------------------------------------------------------------------------
 -- 5. Seed Hackathons (Internal & External - 26 Realistic Opportunities)

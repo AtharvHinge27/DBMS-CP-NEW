@@ -159,6 +159,85 @@ def verify_certificate_page():
     return render_template('verify_certificate.html', initial_code=code)
 
 
+@app.route('/announcements')
+def announcements_page():
+    """Institutional Bulletins, Hackathon Announcements & Deadlines."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('announcements.html')
+
+
+@app.route('/learning')
+def learning_page():
+    """Learning & Guidance Hub (Mentorship, Find Mentors, Workshops, Resources)."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    initial_tab = request.args.get('tab', 'mentorship')
+    return render_template('learning.html', active_tab=initial_tab)
+
+
+@app.route('/mentorship')
+def mentorship_page():
+    """Direct alias to mentorship tab."""
+    return redirect(url_for('learning_page', tab='mentorship'))
+
+
+@app.route('/mentors')
+def mentors_page():
+    """Direct alias to find mentors tab."""
+    return redirect(url_for('learning_page', tab='mentors'))
+
+
+@app.route('/workshops')
+def workshops_page():
+    """Direct alias to workshops & events tab."""
+    return redirect(url_for('learning_page', tab='workshops'))
+
+
+@app.route('/resources')
+def resources_page():
+    """Direct alias to learning resources tab."""
+    return redirect(url_for('learning_page', tab='resources'))
+
+
+@app.route('/results')
+def results_page():
+    """My Results & Performance Scorecards."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('results.html')
+
+
+@app.route('/attendance')
+def attendance_page():
+    """Event Attendance Tracker & Check-in Verification."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('attendance.html')
+
+
+@app.route('/notifications')
+def notifications_page():
+    """Notifications Center."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('notifications.html')
+
+
+@app.route('/help')
+def help_page():
+    """Help, Support & Knowledge Base Desk."""
+    return render_template('help.html')
+
+
+@app.route('/settings')
+def settings_page():
+    """Account Settings, Security & Preferences."""
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+    return render_template('settings.html')
+
+
 @app.route('/admin')
 def admin_page():
     """Super Administrator Portal."""

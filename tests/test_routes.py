@@ -18,7 +18,7 @@ class TestInnoSphereRoutes(unittest.TestCase):
 
     def test_01_public_pages(self):
         """Test public pages accessible without login."""
-        public_urls = ['/', '/login', '/register', '/hackathons', '/hackathons/1', '/leaderboard', '/verify-certificate']
+        public_urls = ['/', '/login', '/register', '/hackathons', '/hackathons/1', '/leaderboard', '/verify-certificate', '/help']
         for url in public_urls:
             with self.subTest(url=url):
                 res = self.client.get(url)
@@ -34,7 +34,11 @@ class TestInnoSphereRoutes(unittest.TestCase):
             sess['college_id'] = 1
             sess['college_name'] = 'Pune Institute of Computer Technology'
 
-        participant_urls = ['/dashboard', '/profile', '/applications', '/teams', '/projects', '/certificates']
+        participant_urls = [
+            '/dashboard', '/profile', '/applications', '/teams', '/projects', 
+            '/certificates', '/announcements', '/learning', '/results', 
+            '/attendance', '/notifications', '/settings'
+        ]
         for url in participant_urls:
             with self.subTest(url=url):
                 res = self.client.get(url)

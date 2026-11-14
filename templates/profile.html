@@ -20,7 +20,7 @@
     <div class="row g-4 mb-4">
         <div class="col-lg-4">
             <!-- Summary Card -->
-            <div class="content-card text-center mb-4">
+            <div class="content-card text-center mb-4" id="personalDetailsCard">
                 <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3">
                     <i class="bi bi-person-circle fs-1"></i>
                 </div>
@@ -41,7 +41,8 @@
                     </div>
                 </div>
 
-                <div class="border-top mt-3 pt-3 text-start small">
+                <div class="border-top mt-3 pt-3 text-start small p-2 rounded" id="academicDetailsCard">
+                    <div class="fw-bold text-primary mb-2"><i class="bi bi-mortarboard me-1"></i> Academic Record</div>
                     <div class="mb-2"><strong class="text-dark">College:</strong> <span id="profCollege" class="text-secondary">-</span></div>
                     <div class="mb-2"><strong class="text-dark">Department:</strong> <span id="profDept" class="text-secondary">-</span></div>
                     <div class="mb-2"><strong class="text-dark">Roll Number:</strong> <span id="profRoll" class="text-secondary">-</span></div>
@@ -57,7 +58,7 @@
 
         <div class="col-lg-8">
             <!-- Bio & Technical Skills -->
-            <div class="content-card mb-4">
+            <div class="content-card mb-4" id="skillsCard">
                 <h5 class="fw-bold text-primary mb-3"><i class="bi bi-info-circle me-1"></i> About & Bio</h5>
                 <p class="text-secondary mb-4" id="profBio" style="line-height: 1.6;">
                     No biography provided yet. Click "Edit Profile Details" to write a short introduction.
@@ -384,6 +385,40 @@ document.getElementById('editProfileForm').addEventListener('submit', async (e) 
 document.addEventListener('DOMContentLoaded', () => {
     loadProfile();
     loadDepartments();
+
+    // Handle deep links from sidebar navigation
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    const actionParam = urlParams.get('action');
+    const hash = window.location.hash;
+
+    setTimeout(() => {
+        if (actionParam === 'edit' || hash === '#edit') {
+            const modalEl = document.getElementById('editProfileModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        } else if (tabParam === 'academic' || hash === '#academic') {
+            const el = document.getElementById('academicDetailsCard');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('target-highlight');
+            }
+        } else if (tabParam === 'skills' || hash === '#skills') {
+            const el = document.getElementById('skillsCard');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('target-highlight');
+            }
+        } else if (tabParam === 'personal' || hash === '#personal') {
+            const el = document.getElementById('personalDetailsCard');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('target-highlight');
+            }
+        }
+    }, 400);
 });
 </script>
 {% endblock %}

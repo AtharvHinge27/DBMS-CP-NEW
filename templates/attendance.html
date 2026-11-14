@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance & Verification – InnoSphere{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Attendance & Participation Verification</h1>
+            <div class="small text-muted">Track your physical and virtual hackathon check-in logs, verified by college coordinators.</div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <span class="badge bg-success px-3 py-2 d-flex align-items-center gap-1">
+                <i class="bi bi-shield-check"></i> AICTE ATAL Verified Roster
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Events Registered</span>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                </div>
+                <div class="stat-val" id="statTotalEvents">0</div>
+                <div class="small text-muted mt-1">Hackathons & Sprints</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Present Check-ins</span>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-person-check-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-success" id="statPresent">0</div>
+                <div class="small text-muted mt-1">Verified on campus/virtual</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Attendance Rate</span>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-info" id="statRate">100%</div>
+                <div class="small text-muted mt-1">Institutional requirement: 80%</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="stat-label">Certificate Eligibility</span>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                </div>
+                <div class="stat-val text-success" id="statEligible">Eligible</div>
+                <div class="small text-muted mt-1">Compliant with ATAL rules</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Policy Banner -->
+    <div class="alert alert-primary d-flex align-items-center gap-3 p-3 mb-4 rounded-3 border-0 shadow-sm">
+        <i class="bi bi-info-circle-fill fs-3 text-primary"></i>
+        <div class="small">
+            <strong>AICTE ATAL & Institutional Compliance Notice:</strong> Digital and verifiable winner/participation certificates are unlocked automatically upon maintaining at least <strong>80% attendance</strong> across required check-in checkpoints. All timestamps are signed with coordinator credentials in the MySQL <code>attendance</code> table.
+        </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="content-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-primary mb-0"><i class="bi bi-calendar-check me-2"></i>My Attendance Logs</h5>
+            <span class="badge bg-light text-dark border" id="attCountBadge">Loading logs...</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-custom" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>Hackathon Event</th>
+                        <th>Host Institution</th>
+                        <th>Event Mode & Venue</th>
+                        <th>Dates</th>
+                        <th>Attendance Status</th>
+                        <th>Check-in Timestamp</th>
+                        <th>Verified By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <div class="spinner-border text-primary spinner-border-sm me-2"></div> Fetching attendance logs...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+async function loadAttendance() {
+    const res = await apiFetch('/api/evaluations/my-attendance');
+    const tbody = document.querySelector('#attendanceTable tbody');
+    const badge = document.getElementById('attCountBadge');
+
+    if (res && res.ok && res.data && res.data.success) {
+        const records = res.data.attendance;
+        badge.textContent = `${records.length} Recorded Check-ins`;
+
+        document.getElementById('statTotalEvents').textContent = records.length;
+        const presentCount = records.filter(r => r.attendance_status === 'Present').length;
+        document.getElementById('statPresent').textContent = presentCount;
+
+        if (records.length > 0) {
+            const pct = Math.round((presentCount / records.length) * 100);
+            document.getElementById('statRate').textContent = `${pct}%`;
+            document.getElementById('statEligible').textContent = pct >= 80 ? 'Eligible' : 'Under Review';
+            document.getElementById('statEligible').className = pct >= 80 ? 'stat-val text-success' : 'stat-val text-warning';
+        }
+
+        if (records.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-2 text-secondary d-block mb-2"></i>
+                        No attendance records found. Register for hackathons to establish check-in records.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = records.map(r => `
+            <tr>
+                <td>
+                    <div class="fw-bold text-dark">${r.hackathon_title}</div>
+                    <span class="badge bg-light text-secondary border mt-1">${r.theme}</span>
+                </td>
+                <td class="small text-secondary">${r.host_college}</td>
+                <td>
+                    <span class="badge bg-light text-dark border me-1">${r.mode}</span>
+                    <small class="text-muted">${r.venue || 'Campus Center'}</small>
+                </td>
+                <td class="small text-muted">
+                    ${r.start_date ? new Date(r.start_date).toLocaleDateString() : '-'}
+                </td>
+                <td>
+                    ${r.attendance_status === 'Present' ? `
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                            <i class="bi bi-check-circle me-1"></i> Present
+                        </span>
+                    ` : r.attendance_status === 'Absent' ? `
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">
+                            <i class="bi bi-x-circle me-1"></i> Absent
+                        </span>
+                    ` : `
+                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">
+                            <i class="bi bi-hourglass-split me-1"></i> ${r.attendance_status}
+                        </span>
+                    `}
+                </td>
+                <td class="small text-muted font-monospace">
+                    ${r.check_in_time ? new Date(r.check_in_time).toLocaleString() : 'Pending Check-in'}
+                </td>
+                <td class="small text-muted">
+                    <i class="bi bi-person-badge me-1 text-primary"></i> ${r.marked_by_name}
+                </td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">Failed to load attendance records.</td></tr>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadAttendance);
+</script>
+{% endblock %}

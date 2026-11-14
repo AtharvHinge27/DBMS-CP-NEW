@@ -282,6 +282,20 @@ document.getElementById('appSearchInput').addEventListener('input', () => {
     window.appSearchDebounce = setTimeout(renderApplications, 200);
 });
 
-document.addEventListener('DOMContentLoaded', loadApplications);
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialStatus = urlParams.get('status');
+    if (initialStatus) {
+        currentStatusFilter = initialStatus;
+        document.querySelectorAll('#appStatusFilterGroup button').forEach(b => {
+            if (b.getAttribute('data-status') === initialStatus) {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+    }
+    loadApplications();
+});
 </script>
 {% endblock %}

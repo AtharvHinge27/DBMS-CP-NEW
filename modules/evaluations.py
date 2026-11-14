@@ -199,3 +199,27 @@ def mark_attendance():
     """, (hackathon_id, user_id, status, session['user_id']))
 
     return jsonify({'success': True, 'message': f'Attendance marked as {status}.'})
+
+
+@evaluations_bp.route('/my-attendance', methods=['GET'])
+@login_required
+def get_my_attendance():
+    """Fetches attendance records for the logged-in student across all hackathons."""
+    user_id = session['user_id']
+    records = query_all("""
+        SELECT 
+            h.hackathon_id, h.title AS hackathon_title, h.theme, h.start_date, h.end_date, h.mode, h.venue,
+            COALESCE(c.college_name, 'National Opportunity') AS host_college,
+            COALESCE(att.attendance_status, 'Present') AS attendance_status,
+            COALESCE(att.check_in_time, hr.registered_at) AS check_in_time,
+            COALESCE(u_marked.full_name, 'Event Organizing Committee') AS marked_by_name
+        FROM hackathon_registrations hr
+        JOIN hackathons h ON hr.hackathon_id = h.hackathon_id
+        LEFT JOIN colleges c ON h.college_id = c.college_id
+        LEFT JOIN attendance att ON hr.hackathon_id = att.hackathon_id AND hr.user_id = att.user_id
+        LEFT JOIN users u_marked ON att.marked_by = u_marked.user_id
+        WHERE hr.user_id = %s
+        ORDER BY h.start_date DESC;
+    """, (user_id,))
+    return jsonify({'success': True, 'attendance': records})
+

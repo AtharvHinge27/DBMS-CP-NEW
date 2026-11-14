@@ -136,5 +136,65 @@ class TestInnoSphereAPI(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertIn('already registered', data['message'].lower())
 
+    def test_11_get_mentors(self):
+        """Test fetching registered mentors."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.get('/api/participants/mentors')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertGreaterEqual(len(data['mentors']), 1)
+        self.assertEqual(data['mentors'][0]['role'], 'Mentor')
+
+    def test_12_get_results(self):
+        """Test fetching participant results."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.get('/api/participants/results')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertIsInstance(data['results'], list)
+
+    def test_13_get_my_attendance(self):
+        """Test fetching participant attendance records."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.get('/api/evaluations/my-attendance')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertIsInstance(data['attendance'], list)
+
+    def test_14_change_password_invalid_current(self):
+        """Test change password fails with incorrect current password."""
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 6
+            sess['full_name'] = 'Atharv Hinge'
+            sess['email'] = 'atharv@pict.edu'
+            sess['role'] = 'Participant'
+
+        response = self.client.post('/api/auth/change-password', json={
+            'current_password': 'wrongcurrentpassword',
+            'new_password': 'newsecretpassword123'
+        })
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(data['success'])
+        self.assertIn('incorrect', data['message'].lower())
+
 if __name__ == '__main__':
     unittest.main()

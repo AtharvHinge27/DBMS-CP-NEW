@@ -170,15 +170,16 @@ def generate_documentation():
     add_callout(doc, "Multi-Tenant Scalability",
         "The database is designed from the ground up for multi-college SaaS operation. Every institutional user, department, and event references college_id, allowing independent colleges to operate isolated hackathons while sharing a single unified national platform.")
 
-    doc.add_heading("Dedicated Student Workspace Modules:", level=2)
+    doc.add_heading("Structured 6-Section Student Workspace Architecture:", level=2)
     p_stu = doc.add_paragraph()
     p_stu.add_run(
-        "To provide students with a modern, friction-free experience inspired by national portals, InnoSphere organizes participant features into five dedicated workspace modules:\n"
-        "1. My Profile (/profile): Captures student academic credentials, branch, semester, technical skills, and portfolio links. Computes real-time profile completion percentage via MySQL Stored Function fn_calculate_profile_completion.\n"
-        "2. My Applications (/applications): Centralized tracker for all registered hackathons, displaying application review status (Applied, Approved, Waitlisted, Rejected), host institutions, team affiliations, and withdrawal actions.\n"
-        "3. My Teams (/teams): Facilitates atomic team creation using MySQL Stored Procedure sp_create_team_with_leader, generating cryptographic 8-character invitation codes and enforcing team size boundary constraints.\n"
-        "4. My Projects (/projects): Complete project lifecycle hub for submitting abstract, tech stack tags, GitHub repositories, and demo videos, with integrated multi-rubric judge score breakdowns and feedback inspection.\n"
-        "5. Certificates & Achievements (/certificates): Displays earned credentials with instant downloadable PDF certificates (generated dynamically via ReportLab) and public cryptographic verification codes."
+        "To provide students with a modern, institutional experience inspired by national portals like AICTE ATAL, InnoSphere organizes participant features into a comprehensive, vertically-scrollable sidebar with 6 distinct sections:\n"
+        "1. CORE: Dashboard (/dashboard), Explore Hackathons (/hackathons), Leaderboard (/leaderboard), and Announcements (/announcements) for official circulars and deadlines.\n"
+        "2. MY PROFILE: Personal Details, Academic Details, Technical Skills, and Edit Profile, computing dynamic completion via MySQL Stored Function fn_calculate_profile_completion.\n"
+        "3. PARTICIPATION: My Applications (/applications), My Registrations (/applications?status=Approved), My Teams (/teams), Team Invitations (/teams?action=join), My Projects (/projects), and Project Submissions (/projects?action=submit).\n"
+        "4. LEARNING & GUIDANCE: Mentorship Program (/learning?tab=mentorship), Find Mentors (/learning?tab=mentors) with verified faculty directory, Workshops & Events (/learning?tab=workshops), and Learning Resources (/learning?tab=resources).\n"
+        "5. PERFORMANCE: Judge Evaluations (/projects?tab=evaluations), My Results (/results) with full scoring cards, Attendance (/attendance) tracking 80% ATAL compliance, and Certificates & Achievements (/certificates).\n"
+        "6. OTHERS: Notifications Center (/notifications), Help & Support Desk (/help), Account Settings & Security (/settings), and Secure Session Logout."
     )
 
     doc.add_heading("Expanded Multi-Domain Hackathon Discovery Engine:", level=2)

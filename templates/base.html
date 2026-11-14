@@ -94,66 +94,152 @@
     {% if is_authenticated %}
     <!-- Hamburger Collapsible Sidebar Navigation -->
     <nav class="sidebar" id="appSidebar">
-        <div class="sidebar-header">Core Navigation</div>
-        <a href="/dashboard" class="nav-link {% if request.path == '/dashboard' %}active{% endif %}">
+        <!-- 1. CORE -->
+        <div class="sidebar-header">Core</div>
+        <a href="/dashboard" class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard">
             <i class="bi bi-speedometer2"></i>
             <span class="nav-text">Dashboard</span>
         </a>
-        <a href="/hackathons" class="nav-link {% if request.path.startswith('/hackathons') %}active{% endif %}">
-            <i class="bi bi-trophy"></i>
-            <span class="nav-text">Hackathons</span>
+        <a href="/hackathons" class="nav-link {% if request.path.startswith('/hackathons') %}active{% endif %}" title="Explore Hackathons">
+            <i class="bi bi-compass"></i>
+            <span class="nav-text">Explore Hackathons</span>
         </a>
-        <a href="/leaderboard" class="nav-link {% if request.path == '/leaderboard' %}active{% endif %}">
+        <a href="/leaderboard" class="nav-link {% if request.path == '/leaderboard' %}active{% endif %}" title="Leaderboard">
             <i class="bi bi-bar-chart-steps"></i>
             <span class="nav-text">Leaderboard</span>
         </a>
+        <a href="/announcements" class="nav-link {% if request.path == '/announcements' %}active{% endif %}" title="Announcements">
+            <i class="bi bi-megaphone"></i>
+            <span class="nav-text">Announcements</span>
+        </a>
 
         {% if current_user.role == 'Participant' %}
-        <div class="sidebar-header">Student Workspace</div>
-        <a href="/profile" class="nav-link {% if request.path == '/profile' %}active{% endif %}">
-            <i class="bi bi-person-badge"></i>
-            <span class="nav-text">My Profile</span>
+        <!-- 2. MY PROFILE -->
+        <div class="sidebar-header">My Profile</div>
+        <a href="/profile?tab=personal" class="nav-link {% if request.path == '/profile' and (not request.args.get('tab') or request.args.get('tab') == 'personal') and not request.args.get('action') %}active{% endif %}" title="Personal Details">
+            <i class="bi bi-person"></i>
+            <span class="nav-text">Personal Details</span>
         </a>
-        <a href="/applications" class="nav-link {% if request.path == '/applications' %}active{% endif %}">
+        <a href="/profile?tab=academic" class="nav-link {% if request.path == '/profile' and request.args.get('tab') == 'academic' %}active{% endif %}" title="Academic Details">
+            <i class="bi bi-mortarboard"></i>
+            <span class="nav-text">Academic Details</span>
+        </a>
+        <a href="/profile?tab=skills" class="nav-link {% if request.path == '/profile' and request.args.get('tab') == 'skills' %}active{% endif %}" title="Technical Skills">
+            <i class="bi bi-code-slash"></i>
+            <span class="nav-text">Technical Skills</span>
+        </a>
+        <a href="/profile?action=edit" class="nav-link {% if request.path == '/profile' and request.args.get('action') == 'edit' %}active{% endif %}" title="Edit Profile">
+            <i class="bi bi-pencil-square"></i>
+            <span class="nav-text">Edit Profile</span>
+        </a>
+
+        <!-- 3. PARTICIPATION -->
+        <div class="sidebar-header">Participation</div>
+        <a href="/applications" class="nav-link {% if request.path == '/applications' and not request.args.get('status') %}active{% endif %}" title="My Applications">
             <i class="bi bi-file-earmark-check"></i>
             <span class="nav-text">My Applications</span>
         </a>
-        <a href="/teams" class="nav-link {% if request.path == '/teams' %}active{% endif %}">
+        <a href="/applications?status=Approved" class="nav-link {% if request.path == '/applications' and request.args.get('status') == 'Approved' %}active{% endif %}" title="My Registrations">
+            <i class="bi bi-check2-circle"></i>
+            <span class="nav-text">My Registrations</span>
+        </a>
+        <a href="/teams" class="nav-link {% if request.path == '/teams' and not request.args.get('action') %}active{% endif %}" title="My Teams">
             <i class="bi bi-people-fill"></i>
             <span class="nav-text">My Teams</span>
         </a>
-        <a href="/projects" class="nav-link {% if request.path == '/projects' %}active{% endif %}">
+        <a href="/teams?action=join" class="nav-link {% if request.path == '/teams' and request.args.get('action') == 'join' %}active{% endif %}" title="Team Invitations">
+            <i class="bi bi-envelope-paper-heart"></i>
+            <span class="nav-text">Team Invitations</span>
+        </a>
+        <a href="/projects" class="nav-link {% if request.path == '/projects' and not request.args.get('action') and not request.args.get('tab') %}active{% endif %}" title="My Projects">
             <i class="bi bi-folder-check"></i>
             <span class="nav-text">My Projects</span>
         </a>
-        <a href="/certificates" class="nav-link {% if request.path == '/certificates' %}active{% endif %}">
-            <i class="bi bi-award-fill"></i>
+        <a href="/projects?action=submit" class="nav-link {% if request.path == '/projects' and request.args.get('action') == 'submit' %}active{% endif %}" title="Project Submissions">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span class="nav-text">Project Submissions</span>
+        </a>
+
+        <!-- 4. LEARNING & GUIDANCE -->
+        <div class="sidebar-header">Learning & Guidance</div>
+        <a href="/learning?tab=mentorship" class="nav-link {% if request.path == '/learning' and (not request.args.get('tab') or request.args.get('tab') == 'mentorship') %}active{% endif %}" title="Mentorship">
+            <i class="bi bi-person-video3"></i>
+            <span class="nav-text">Mentorship</span>
+        </a>
+        <a href="/learning?tab=mentors" class="nav-link {% if request.path == '/learning' and request.args.get('tab') == 'mentors' %}active{% endif %}" title="Find Mentors">
+            <i class="bi bi-search-heart"></i>
+            <span class="nav-text">Find Mentors</span>
+        </a>
+        <a href="/learning?tab=workshops" class="nav-link {% if request.path == '/learning' and request.args.get('tab') == 'workshops' %}active{% endif %}" title="Workshops & Events">
+            <i class="bi bi-easel"></i>
+            <span class="nav-text">Workshops & Events</span>
+        </a>
+        <a href="/learning?tab=resources" class="nav-link {% if request.path == '/learning' and request.args.get('tab') == 'resources' %}active{% endif %}" title="Learning Resources">
+            <i class="bi bi-journal-code"></i>
+            <span class="nav-text">Learning Resources</span>
+        </a>
+
+        <!-- 5. PERFORMANCE -->
+        <div class="sidebar-header">Performance</div>
+        <a href="/projects?tab=evaluations" class="nav-link {% if request.path == '/projects' and request.args.get('tab') == 'evaluations' %}active{% endif %}" title="Judge Evaluations">
+            <i class="bi bi-card-checklist"></i>
+            <span class="nav-text">Judge Evaluations</span>
+        </a>
+        <a href="/results" class="nav-link {% if request.path == '/results' %}active{% endif %}" title="My Results">
+            <i class="bi bi-award"></i>
+            <span class="nav-text">My Results</span>
+        </a>
+        <a href="/attendance" class="nav-link {% if request.path == '/attendance' %}active{% endif %}" title="Attendance">
+            <i class="bi bi-calendar-check"></i>
+            <span class="nav-text">Attendance</span>
+        </a>
+        <a href="/certificates" class="nav-link {% if request.path == '/certificates' %}active{% endif %}" title="Certificates & Achievements">
+            <i class="bi bi-patch-check-fill"></i>
             <span class="nav-text">Certificates & Achievements</span>
         </a>
         {% endif %}
 
         {% if current_user.role in ['Judge', 'Admin'] %}
         <div class="sidebar-header">Evaluation Zone</div>
-        <a href="/evaluations" class="nav-link {% if request.path == '/evaluations' %}active{% endif %}">
+        <a href="/evaluations" class="nav-link {% if request.path == '/evaluations' %}active{% endif %}" title="Judge Evaluations Console">
             <i class="bi bi-check2-square"></i>
-            <span class="nav-text">Judge Evaluations</span>
+            <span class="nav-text">Judge Evaluations Console</span>
         </a>
         {% endif %}
 
         {% if current_user.role in ['Admin', 'College Coordinator'] %}
         <div class="sidebar-header">Institutional Control</div>
-        <a href="/admin" class="nav-link {% if request.path == '/admin' %}active{% endif %}">
+        <a href="/admin" class="nav-link {% if request.path == '/admin' %}active{% endif %}" title="Admin Management">
             <i class="bi bi-building-gear"></i>
             <span class="nav-text">Admin Management</span>
         </a>
-        <a href="/coordinator" class="nav-link {% if request.path == '/coordinator' %}active{% endif %}">
+        <a href="/coordinator" class="nav-link {% if request.path == '/coordinator' %}active{% endif %}" title="Coordinator Portal">
             <i class="bi bi-card-checklist"></i>
             <span class="nav-text">Coordinator Portal</span>
         </a>
         {% endif %}
 
-        <div class="mt-auto border-top pt-3 px-3 sidebar-user-info">
-            <div class="small text-muted">Signed in as:</div>
+        <!-- 6. OTHERS -->
+        <div class="sidebar-header">Others</div>
+        <a href="/notifications" class="nav-link {% if request.path == '/notifications' %}active{% endif %}" title="Notifications">
+            <i class="bi bi-bell"></i>
+            <span class="nav-text">Notifications</span>
+        </a>
+        <a href="/help" class="nav-link {% if request.path == '/help' %}active{% endif %}" title="Help & Support">
+            <i class="bi bi-question-circle"></i>
+            <span class="nav-text">Help & Support</span>
+        </a>
+        <a href="/settings" class="nav-link {% if request.path == '/settings' %}active{% endif %}" title="Settings">
+            <i class="bi bi-gear"></i>
+            <span class="nav-text">Settings</span>
+        </a>
+        <a href="javascript:void(0)" onclick="handleLogout()" class="nav-link text-danger" title="Logout">
+            <i class="bi bi-box-arrow-right text-danger"></i>
+            <span class="nav-text">Logout</span>
+        </a>
+
+        <div class="mt-3 border-top pt-3 px-3 sidebar-user-info">
+            <div class="small text-muted" style="font-size: 0.72rem;">Signed in as:</div>
             <div class="fw-bold small text-truncate">{{ current_user.email }}</div>
             <div class="badge badge-role badge-role-{{ current_user.role|lower|replace(' ', '-') }} mt-1">{{ current_user.role }}</div>
         </div>
